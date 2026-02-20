@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academics - Bright Future Academy</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700;800;900&family=Cormorant+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1a3a6e;
+            --accent: #f0a500;
+            --accent2: #e05c2a;
+            --text: #ffffff;
+            --card-bg: rgba(255,255,255,0.08);
+            --card-border: rgba(255,255,255,0.15);
+            --shadow: 0 8px 32px rgba(0,0,0,0.3);
+            --nav-bg: rgba(10,20,50,0.85);
+        }
+
+        body.white-mode {
+            --text: #1a1a2e;
+            --card-bg: rgba(255,255,255,0.92);
+            --card-border: rgba(26,58,110,0.15);
+            --shadow: 0 8px 32px rgba(0,0,0,0.1);
+            --nav-bg: rgba(255,255,255,0.95);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Raleway', sans-serif;
+            color: var(--text);
+            min-height: 100vh;
+            transition: color 0.4s ease;
+            overflow-x: hidden;
+        }
+
+        /* ======= 3D CANVAS BACKGROUND ======= */
+        #bg-canvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: -1;
+            transition: opacity 0.6s ease;
+        }
+
+        .white-bg-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(135deg, #f0f4ff 0%, #e8edf8 40%, #f5f0ff 100%);
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.6s ease;
+            pointer-events: none;
+        }
+
+        body.white-mode #bg-canvas { opacity: 0; }
+        body.white-mode .white-bg-overlay { opacity: 1; }
+
+        /* ======= THEME TOGGLE ======= */
+        .theme-toggle {
+            position: fixed;
+            top: 4.8rem;
+            right: 1.5rem;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.25);
+            border-radius: 50px;
+            padding: 0.4rem 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            color: var(--text);
+        }
+        .theme-toggle:hover { transform: scale(1.05); }
+        body.white-mode .theme-toggle {
+            background: rgba(26,58,110,0.1);
+            border-color: rgba(26,58,110,0.2);
+        }
+
+        .toggle-knob {
+            width: 36px; height: 20px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 10px;
+            position: relative;
+            transition: background 0.3s;
+        }
+        .toggle-knob::after {
+            content: '';
+            position: absolute;
+            top: 3px; left: 3px;
+            width: 14px; height: 14px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s, background 0.3s;
+        }
+        body.white-mode .toggle-knob { background: var(--primary); }
+        body.white-mode .toggle-knob::after { transform: translateX(16px); }
+
+        /* ======= NAV ======= */
+        .navbar {
+            position: fixed; top: 0; left: 0; right: 0;
+            z-index: 900;
+            background: var(--nav-bg);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            transition: background 0.4s ease;
+        }
+        body.white-mode .navbar { border-bottom-color: rgba(26,58,110,0.1); }
+
+        .nav-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 64px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text);
+            text-decoration: none;
+        }
+        .logo i { color: var(--accent); font-size: 1.5rem; }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+        .nav-links a {
+            color: var(--text);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            opacity: 0.8;
+            transition: opacity 0.2s, color 0.2s;
+        }
+        .nav-links a:hover, .nav-links a.active { opacity: 1; color: var(--accent); }
+
+        /* ======= PAGE HEADER ======= */
+        .page-header {
+            min-height: 380px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 8rem 2rem 4rem;
+        }
+        .page-header h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(3rem, 7vw, 5.5rem);
+            font-weight: 700;
+            line-height: 1;
+            letter-spacing: -0.02em;
+            color: var(--text);
+        }
+        .page-header h1 span { color: var(--accent); }
+        .page-header p {
+            margin-top: 1rem;
+            font-size: 1.1rem;
+            opacity: 0.7;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            justify-content: center;
+            margin-top: 1.5rem;
+            font-size: 0.85rem;
+            opacity: 0.6;
+        }
+        .breadcrumb a { color: inherit; text-decoration: none; }
+        .breadcrumb a:hover { color: var(--accent); }
+
+        /* ======= COMMON ======= */
+        section { padding: 5rem 0; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+
+        .section-tag {
+            display: inline-block;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--accent);
+            background: rgba(240,165,0,0.15);
+            border: 1px solid rgba(240,165,0,0.3);
+            padding: 0.3rem 0.9rem;
+            border-radius: 50px;
+            margin-bottom: 1rem;
+        }
+
+        .section-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 700;
+            color: var(--text);
+            line-height: 1.1;
+        }
+        .section-subtitle {
+            margin-top: 0.8rem;
+            opacity: 0.65;
+            font-size: 1rem;
+        }
+        .centered { text-align: center; margin-bottom: 3rem; }
+
+        /* ======= CLASSES GRID ======= */
+        .classes-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.8rem;
+        }
+
+        .class-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            backdrop-filter: blur(16px);
+            border-radius: 18px;
+            padding: 2rem;
+            border-left: 4px solid var(--accent);
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        .class-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent), var(--accent2));
+            transform: scaleX(0);
+            transition: transform 0.3s;
+        }
+        .class-card:hover { transform: translateY(-6px); box-shadow: 0 20px 50px rgba(0,0,0,0.2); }
+        .class-card:hover::before { transform: scaleX(1); }
+
+        .class-card h3 {
+            color: var(--accent);
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+        .class-card h3 i { font-size: 1rem; }
+
+        .class-card ul { list-style: none; padding: 0; }
+        .class-card ul li {
+            padding: 0.55rem 0;
+            border-bottom: 1px solid var(--card-border);
+            font-size: 0.92rem;
+            color: var(--text);
+            opacity: 0.85;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .class-card ul li:last-child { border-bottom: none; }
+        .class-card ul li::before {
+            content: '›';
+            color: var(--accent);
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        /* ======= SUBJECTS ======= */
+        .subjects-section { background: transparent; }
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+        }
+
+        .subject-group h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 1.2rem;
+            padding-bottom: 0.6rem;
+            border-bottom: 2px solid rgba(240,165,0,0.3);
+        }
+
+        .subject-item {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            backdrop-filter: blur(12px);
+            border-radius: 12px;
+            padding: 1rem 1.3rem;
+            margin-bottom: 0.7rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .subject-item:hover { transform: translateX(5px); box-shadow: var(--shadow); }
+        .subject-item i { color: var(--accent); font-size: 1rem; flex-shrink: 0; }
+        .subject-item span { font-size: 0.92rem; color: var(--text); }
+
+        /* ======= EXAM SYSTEM ======= */
+        .exam-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.8rem;
+            margin-top: 1rem;
+        }
+
+        .exam-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            backdrop-filter: blur(16px);
+            border-radius: 20px;
+            padding: 2.5rem 2rem;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        .exam-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent), var(--accent2));
+            transform: scaleX(0);
+            transition: transform 0.3s;
+        }
+        .exam-card:hover { transform: translateY(-8px); box-shadow: 0 20px 50px rgba(0,0,0,0.2); }
+        .exam-card:hover::after { transform: scaleX(1); }
+
+        .exam-icon {
+            width: 64px; height: 64px;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.6rem;
+            color: white;
+            margin: 0 auto 1.5rem;
+            box-shadow: 0 4px 20px rgba(240,165,0,0.4);
+        }
+        .exam-card h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.8rem;
+            color: var(--text);
+        }
+        .exam-card p {
+            font-size: 0.88rem;
+            opacity: 0.7;
+            line-height: 1.6;
+        }
+
+        /* ======= FACILITIES STRIP ======= */
+        .facilities-strip {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+        .facility-pill {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            backdrop-filter: blur(12px);
+            border-radius: 50px;
+            padding: 0.7rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--text);
+            transition: all 0.3s;
+        }
+        .facility-pill:hover {
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            border-color: transparent;
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(240,165,0,0.35);
+        }
+        .facility-pill i { color: var(--accent); font-size: 1rem; transition: color 0.3s; }
+        .facility-pill:hover i { color: white; }
+
+        /* ======= FOOTER ======= */
+        footer {
+            background: rgba(10,20,50,0.9);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255,255,255,0.08);
+            padding: 4rem 0 2rem;
+            margin-top: 2rem;
+        }
+        body.white-mode footer { background: rgba(26,58,110,0.95); }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1.5fr;
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+        .footer-logo {
+            display: flex; align-items: center; gap: 0.7rem;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.2rem; font-weight: 700;
+            color: white; margin-bottom: 1rem;
+        }
+        .footer-logo i { color: var(--accent); }
+        .footer-desc { font-size: 0.88rem; opacity: 0.65; line-height: 1.7; color: white; }
+        .social-links { display: flex; gap: 0.7rem; margin-top: 1.2rem; }
+        .social-link {
+            width: 36px; height: 36px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 0.85rem;
+            text-decoration: none;
+            transition: background 0.2s, transform 0.2s;
+        }
+        .social-link:hover { background: var(--accent); transform: translateY(-3px); }
+        .footer-col h4 { color: white; font-size: 0.85rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 1.2rem; }
+        .footer-links { list-style: none; }
+        .footer-links li { margin-bottom: 0.6rem; }
+        .footer-links a { color: rgba(255,255,255,0.6); text-decoration: none; font-size: 0.88rem; transition: color 0.2s; }
+        .footer-links a:hover { color: var(--accent); }
+        .footer-contact { list-style: none; }
+        .footer-contact li { display: flex; gap: 0.8rem; color: rgba(255,255,255,0.65); font-size: 0.88rem; margin-bottom: 0.8rem; align-items: flex-start; line-height: 1.5; }
+        .footer-contact i { color: var(--accent); margin-top: 2px; flex-shrink: 0; }
+        .footer-bottom {
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 2rem;
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 0.82rem; color: rgba(255,255,255,0.5);
+        }
+        .footer-bottom a { color: rgba(255,255,255,0.5); text-decoration: none; margin-left: 1.5rem; transition: color 0.2s; }
+        .footer-bottom a:hover { color: var(--accent); }
+
+        @media(max-width:768px) {
+            .classes-grid { grid-template-columns: 1fr 1fr; }
+            .content-grid { grid-template-columns: 1fr; }
+            .exam-grid { grid-template-columns: 1fr; }
+            .footer-grid { grid-template-columns: 1fr 1fr; }
+            .nav-links { display: none; }
+            .footer-bottom { flex-direction: column; gap: 1rem; text-align: center; }
+        }
+        @media(max-width:480px) {
+            .classes-grid { grid-template-columns: 1fr; }
+            .footer-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- White BG Overlay -->
+    <div class="white-bg-overlay"></div>
+
+    <!-- 3D Canvas Background -->
+    <canvas id="bg-canvas"></canvas>
+
+    <!-- Theme Toggle -->
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+        <i class="fas fa-cube" id="toggle-icon"></i>
+        <div class="toggle-knob" id="toggle-knob"></div>
+        <span id="toggle-label">3D</span>
+    </button>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-inner">
+            <a href="index.html" class="logo">
+                <i class="fas fa-graduation-cap"></i>
+                Bright Future Academy
+            </a>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="about.html">About Us</a>
+                <a href="admissions.html">Admissions</a>
+                <a href="academics.html" class="active">Academics</a>
+                <a href="gallery.html">Gallery</a>
+                <a href="contact.html">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div>
+            <h1>Academic <span>Excellence</span></h1>
+            <p>Comprehensive Curriculum for Holistic Development</p>
+            <div class="breadcrumb">
+                <a href="index.html">Home</a>
+                <i class="fas fa-chevron-right"></i>
+                <span>Academics</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Classes We Offer -->
+    <section>
+        <div class="container">
+            <div class="centered">
+                <div class="section-tag">Our Curriculum</div>
+                <h2 class="section-title">Classes We Offer</h2>
+                <p class="section-subtitle">CBSE Affiliated — From Nursery to Class 12</p>
+            </div>
+            <div class="classes-grid">
+                <div class="class-card">
+                    <h3><i class="fas fa-child"></i> Pre-Primary</h3>
+                    <ul>
+                        <li>Nursery</li>
+                        <li>LKG</li>
+                        <li>UKG</li>
+                    </ul>
+                </div>
+                <div class="class-card">
+                    <h3><i class="fas fa-book-open"></i> Primary</h3>
+                    <ul>
+                        <li>Class 1</li>
+                        <li>Class 2</li>
+                        <li>Class 3</li>
+                        <li>Class 4</li>
+                        <li>Class 5</li>
+                    </ul>
+                </div>
+                <div class="class-card">
+                    <h3><i class="fas fa-school"></i> Middle School</h3>
+                    <ul>
+                        <li>Class 6</li>
+                        <li>Class 7</li>
+                        <li>Class 8</li>
+                    </ul>
+                </div>
+                <div class="class-card">
+                    <h3><i class="fas fa-user-graduate"></i> Secondary</h3>
+                    <ul>
+                        <li>Class 9</li>
+                        <li>Class 10</li>
+                    </ul>
+                </div>
+                <div class="class-card">
+                    <h3><i class="fas fa-flask"></i> Sr. Secondary (Science)</h3>
+                    <ul>
+                        <li>Class 11 – PCM</li>
+                        <li>Class 11 – PCB</li>
+                        <li>Class 12</li>
+                    </ul>
+                </div>
+                <div class="class-card">
+                    <h3><i class="fas fa-chart-line"></i> Sr. Secondary (Commerce)</h3>
+                    <ul>
+                        <li>Class 11</li>
+                        <li>Class 12</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Subjects -->
+    <section>
+        <div class="container">
+            <div class="centered">
+                <div class="section-tag">Subjects</div>
+                <h2 class="section-title">Subject Offerings</h2>
+                <p class="section-subtitle">A well-rounded academic programme</p>
+            </div>
+            <div class="content-grid">
+                <div class="subject-group">
+                    <h3>Core Subjects</h3>
+                    <div class="subject-item"><i class="fas fa-check-circle"></i><span>English Language &amp; Literature</span></div>
+                    <div class="subject-item"><i class="fas fa-check-circle"></i><span>Hindi / Sanskrit</span></div>
+                    <div class="subject-item"><i class="fas fa-check-circle"></i><span>Mathematics</span></div>
+                    <div class="subject-item"><i class="fas fa-check-circle"></i><span>Science (Physics, Chemistry, Biology)</span></div>
+                    <div class="subject-item"><i class="fas fa-check-circle"></i><span>Social Science (History, Geography, Civics, Economics)</span></div>
+                </div>
+                <div class="subject-group">
+                    <h3>Additional Subjects</h3>
+                    <div class="subject-item"><i class="fas fa-check-circle"></i><span>Computer Science / Informatics Practices</span></div>
+                    <div class="subject-item"><i class="fas fa-check-circle"></i><span>Accountancy (Commerce Stream)</span></div>
+                    <div class="subject-item"><i class="fas fa-check-circle"></i><span>Business Studies (Commerce Stream)</span></div>
+                    <div class="subject-item"><i class="fas fa-check-circle"></i><span>Physical Education</span></div>
+                    <div class="subject-item"><i class="fas fa-check-circle"></i><span>Art &amp; Craft</span></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Examination System -->
+    <section>
+        <div class="container">
+            <div class="centered">
+                <div class="section-tag">Evaluation</div>
+                <h2 class="section-title">Examination System</h2>
+                <p class="section-subtitle">Rigorous, fair and CBSE-aligned assessment</p>
+            </div>
+            <div class="exam-grid">
+                <div class="exam-card">
+                    <div class="exam-icon"><i class="fas fa-clipboard-check"></i></div>
+                    <h3>Continuous Evaluation</h3>
+                    <p>Regular assessments throughout the year including class tests, assignments, projects, and presentations for comprehensive evaluation.</p>
+                </div>
+                <div class="exam-card">
+                    <div class="exam-icon"><i class="fas fa-file-alt"></i></div>
+                    <h3>Term Examinations</h3>
+                    <p>Two major term examinations (Mid-Term and Annual) conducted as per CBSE guidelines with proper invigilation and evaluation.</p>
+                </div>
+                <div class="exam-card">
+                    <div class="exam-icon"><i class="fas fa-award"></i></div>
+                    <h3>Board Examinations</h3>
+                    <p>Preparation for CBSE Board Exams for Class 10 and 12 with mock tests, special classes, and doubt clearing sessions.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Facilities -->
+    <section>
+        <div class="container">
+            <div class="centered">
+                <div class="section-tag">Facilities</div>
+                <h2 class="section-title">Our Facilities</h2>
+                <p class="section-subtitle">State-of-the-art infrastructure for the best learning experience</p>
+            </div>
+            <div class="facilities-strip">
+                <div class="facility-pill"><i class="fas fa-laptop"></i> Computer Lab</div>
+                <div class="facility-pill"><i class="fas fa-flask"></i> Science Labs</div>
+                <div class="facility-pill"><i class="fas fa-book"></i> Library</div>
+                <div class="facility-pill"><i class="fas fa-futbol"></i> Sports Ground</div>
+                <div class="facility-pill"><i class="fas fa-music"></i> Music Room</div>
+                <div class="facility-pill"><i class="fas fa-paint-brush"></i> Art Studio</div>
+                <div class="facility-pill"><i class="fas fa-theater-masks"></i> Auditorium</div>
+                <div class="facility-pill"><i class="fas fa-wifi"></i> Smart Classrooms</div>
+                <div class="facility-pill"><i class="fas fa-bus"></i> Transport</div>
+                <div class="facility-pill"><i class="fas fa-utensils"></i> Cafeteria</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <div class="footer-logo"><i class="fas fa-graduation-cap"></i> Bright Future Academy</div>
+                    <p class="footer-desc">Empowering young minds with quality education and holistic development since 1995.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-youtube"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                <div>
+                    <h4>Quick Links</h4>
+                    <ul class="footer-links">
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="admissions.html">Admissions</a></li>
+                        <li><a href="academics.html">Academics</a></li>
+                        <li><a href="gallery.html">Gallery</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Downloads</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4>Portals</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">Student Login</a></li>
+                        <li><a href="#">Teacher Login</a></li>
+                        <li><a href="#">Admin Login</a></li>
+                        <li><a href="#">Parent Portal</a></li>
+                        <li><a href="#">Alumni Portal</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4>Contact Us</h4>
+                    <ul class="footer-contact">
+                        <li><i class="fas fa-map-marker-alt"></i><span>Sector 15, Rohini<br>New Delhi – 110085</span></li>
+                        <li><i class="fas fa-phone"></i><span>+91 11 2345 6789</span></li>
+                        <li><i class="fas fa-envelope"></i><span>info@brightfuture.edu.in</span></li>
+                        <li><i class="fas fa-clock"></i><span>Mon–Sat: 8:00 AM – 4:00 PM</span></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2024 Bright Future Academy. All Rights Reserved.</p>
+                <div>
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms &amp; Conditions</a>
+                    <a href="#">Sitemap</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+    // ============ THEME TOGGLE ============
+    let isWhiteMode = false;
+    function toggleTheme() {
+        isWhiteMode = !isWhiteMode;
+        document.body.classList.toggle('white-mode', isWhiteMode);
+        document.getElementById('toggle-label').textContent = isWhiteMode ? 'White' : '3D';
+        document.getElementById('toggle-icon').className = isWhiteMode ? 'fas fa-sun' : 'fas fa-cube';
+    }
+
+    // ============ 3D CANVAS BACKGROUND ============
+    const canvas = document.getElementById('bg-canvas');
+    const ctx = canvas.getContext('2d');
+    let W, H, particles, shapes, mouse = {x: 0, y: 0};
+    const NUM_PARTICLES = 90;
+    const CONNECT_DIST = 160;
+
+    function resize() {
+        W = canvas.width = window.innerWidth;
+        H = canvas.height = window.innerHeight;
+    }
+
+    class Particle {
+        constructor() { this.reset(true); }
+        reset(init = false) {
+            this.x = Math.random() * W;
+            this.y = init ? Math.random() * H : H + 10;
+            this.z = 0.3 + Math.random() * 0.7;
+            this.vx = (Math.random() - 0.5) * 0.4 * this.z;
+            this.vy = -(0.2 + Math.random() * 0.5) * this.z;
+            this.r = 1.5 + this.z * 2.5;
+            this.alpha = 0.4 + this.z * 0.5;
+            const colors = ['#f0a500','#e05c2a','#5b8df0','#a0c4ff','#ffffff'];
+            this.color = colors[Math.floor(Math.random() * colors.length)];
+            this.life = 0;
+            this.maxLife = 300 + Math.random() * 500;
+        }
+        update() {
+            this.x += this.vx;
+            this.y += this.vy;
+            const dx = this.x - mouse.x, dy = this.y - mouse.y;
+            const dist = Math.sqrt(dx*dx + dy*dy);
+            if (dist < 150) {
+                const force = (150 - dist) / 150 * 0.05;
+                this.vx += dx / dist * force;
+                this.vy += dy / dist * force;
+            }
+            this.vx *= 0.99; this.vy *= 0.99; this.life++;
+            if (this.y < -20 || this.life > this.maxLife || this.x < -50 || this.x > W + 50) this.reset();
+        }
+        draw() {
+            ctx.save();
+            ctx.globalAlpha = this.alpha;
+            ctx.fillStyle = this.color;
+            ctx.shadowBlur = 8 * this.z;
+            ctx.shadowColor = this.color;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+        }
+    }
+
+    class FloatShape {
+        constructor() { this.init(); }
+        init() {
+            this.x = Math.random() * W; this.y = Math.random() * H;
+            this.size = 20 + Math.random() * 50;
+            this.rot = Math.random() * Math.PI * 2;
+            this.rotSpeed = (Math.random() - 0.5) * 0.008;
+            this.vx = (Math.random() - 0.5) * 0.3;
+            this.vy = (Math.random() - 0.5) * 0.2;
+            this.alpha = 0.04 + Math.random() * 0.08;
+            this.type = Math.floor(Math.random() * 3);
+        }
+        update() {
+            this.x += this.vx; this.y += this.vy; this.rot += this.rotSpeed;
+            if (this.x < -100) this.x = W + 100;
+            if (this.x > W + 100) this.x = -100;
+            if (this.y < -100) this.y = H + 100;
+            if (this.y > H + 100) this.y = -100;
+        }
+        draw() {
+            ctx.save();
+            ctx.translate(this.x, this.y); ctx.rotate(this.rot);
+            ctx.globalAlpha = this.alpha; ctx.strokeStyle = '#5b8df0'; ctx.lineWidth = 1;
+            const s = this.size;
+            if (this.type === 0) {
+                ctx.strokeRect(-s/2, -s/2, s, s);
+                ctx.rotate(Math.PI/4);
+                ctx.strokeRect(-s/3, -s/3, s*0.67, s*0.67);
+            } else if (this.type === 1) {
+                ctx.beginPath(); ctx.moveTo(0, -s/2); ctx.lineTo(s/2, s/2); ctx.lineTo(-s/2, s/2); ctx.closePath(); ctx.stroke();
+            } else {
+                ctx.beginPath(); ctx.moveTo(0, -s/2); ctx.lineTo(s/2, 0); ctx.lineTo(0, s/2); ctx.lineTo(-s/2, 0); ctx.closePath(); ctx.stroke();
+            }
+            ctx.restore();
+        }
+    }
+
+    function init() {
+        resize();
+        particles = Array.from({length: NUM_PARTICLES}, () => new Particle());
+        shapes = Array.from({length: 14}, () => new FloatShape());
+    }
+
+    function drawBackground() {
+        const grad = ctx.createLinearGradient(0, 0, W, H);
+        grad.addColorStop(0, '#040d1e');
+        grad.addColorStop(0.4, '#061430');
+        grad.addColorStop(0.7, '#0a1a40');
+        grad.addColorStop(1, '#050c22');
+        ctx.fillStyle = grad; ctx.fillRect(0, 0, W, H);
+        const rg = ctx.createRadialGradient(W*0.5, 0, 0, W*0.5, 0, H*0.7);
+        rg.addColorStop(0, 'rgba(91,141,240,0.12)');
+        rg.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = rg; ctx.fillRect(0, 0, W, H);
+    }
+
+    function drawConnections() {
+        for (let i = 0; i < particles.length; i++) {
+            for (let j = i + 1; j < particles.length; j++) {
+                const dx = particles[i].x - particles[j].x;
+                const dy = particles[i].y - particles[j].y;
+                const dist = Math.sqrt(dx*dx + dy*dy);
+                if (dist < CONNECT_DIST) {
+                    ctx.save();
+                    ctx.globalAlpha = (1 - dist / CONNECT_DIST) * 0.25;
+                    ctx.strokeStyle = '#5b8df0'; ctx.lineWidth = 0.6;
+                    ctx.beginPath(); ctx.moveTo(particles[i].x, particles[i].y); ctx.lineTo(particles[j].x, particles[j].y); ctx.stroke();
+                    ctx.restore();
+                }
+            }
+        }
+    }
+
+    function animate() {
+        drawBackground();
+        shapes.forEach(s => { s.update(); s.draw(); });
+        drawConnections();
+        particles.forEach(p => { p.update(); p.draw(); });
+        requestAnimationFrame(animate);
+    }
+
+    window.addEventListener('resize', resize);
+    window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+    init(); animate();
+    </script>
+</body>
+</html>

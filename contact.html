@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - Bright Future Academy</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700;800;900&family=Cormorant+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+        --accent: #f0a500;
+        --accent2: #e05c2a;
+        --text: #ffffff;
+        --card-bg: rgba(255,255,255,0.08);
+        --card-border: rgba(255,255,255,0.15);
+        --card-bg-solid: rgba(255,255,255,0.12);
+        --nav-bg: rgba(10,20,50,0.85);
+        --input-bg: rgba(255,255,255,0.08);
+        --input-border: rgba(255,255,255,0.2);
+        --label-color: rgba(255,255,255,0.8);
+        --info-text: rgba(255,255,255,0.7);
+        --heading-color: #ffffff;
+        --sub-color: rgba(255,255,255,0.65);
+        --icon-bg: rgba(240,165,0,0.15);
+        --icon-border: rgba(240,165,0,0.3);
+    }
+
+    body.white-mode {
+        --text: #1a1a2e;
+        --card-bg: rgba(255,255,255,0.88);
+        --card-border: rgba(26,58,110,0.15);
+        --card-bg-solid: rgba(255,255,255,0.92);
+        --nav-bg: rgba(255,255,255,0.95);
+        --input-bg: rgba(255,255,255,0.9);
+        --input-border: rgba(26,58,110,0.2);
+        --label-color: #334;
+        --info-text: #556;
+        --heading-color: #1a1a2e;
+        --sub-color: rgba(26,26,46,0.65);
+        --icon-bg: rgba(26,58,110,0.08);
+        --icon-border: rgba(26,58,110,0.2);
+    }
+
+    body { font-family: 'Raleway', sans-serif; overflow-x: hidden; color: var(--text); min-height: 100vh; }
+
+    /* ======= 3D CANVAS ======= */
+    #bg-canvas {
+        position: fixed; top: 0; left: 0;
+        width: 100%; height: 100%;
+        z-index: -2; transition: opacity 0.6s ease;
+    }
+    .white-bg-overlay {
+        position: fixed; top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: linear-gradient(135deg, #f0f4ff 0%, #e8edf8 40%, #f5f0ff 100%);
+        z-index: -2; opacity: 0;
+        transition: opacity 0.6s ease; pointer-events: none;
+    }
+    body.white-mode #bg-canvas { opacity: 0; }
+    body.white-mode .white-bg-overlay { opacity: 1; }
+
+    /* ======= THEME TOGGLE ======= */
+    .theme-toggle {
+        position: fixed; top: 4.8rem; right: 1.5rem; z-index: 1100;
+        display: flex; align-items: center; gap: 0.6rem;
+        background: rgba(255,255,255,0.15); backdrop-filter: blur(12px);
+        border: 1px solid rgba(255,255,255,0.25); border-radius: 50px;
+        padding: 0.4rem 1rem; cursor: pointer;
+        transition: all 0.3s ease; font-size: 0.8rem; font-weight: 600;
+        letter-spacing: 0.05em; color: var(--text);
+    }
+    .theme-toggle:hover { transform: scale(1.05); }
+    body.white-mode .theme-toggle { background: rgba(26,58,110,0.1); border-color: rgba(26,58,110,0.25); }
+    .toggle-knob {
+        width: 36px; height: 20px; background: rgba(255,255,255,0.3);
+        border-radius: 10px; position: relative; transition: background 0.3s;
+    }
+    .toggle-knob::after {
+        content: ''; position: absolute; top: 3px; left: 3px;
+        width: 14px; height: 14px; background: white;
+        border-radius: 50%; transition: transform 0.3s;
+    }
+    body.white-mode .toggle-knob { background: #1a3a6e; }
+    body.white-mode .toggle-knob::after { transform: translateX(16px); }
+
+    /* ======= NAVBAR ======= */
+    .navbar {
+        position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+        background: var(--nav-bg); backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        transition: background 0.4s ease;
+    }
+    body.white-mode .navbar { border-bottom-color: rgba(26,58,110,0.1); }
+    .nav-inner {
+        max-width: 1200px; margin: 0 auto; padding: 0 2rem;
+        display: flex; align-items: center; justify-content: space-between; height: 64px;
+    }
+    .logo {
+        display: flex; align-items: center; gap: 0.7rem;
+        font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 700;
+        color: var(--text); text-decoration: none;
+    }
+    .logo i { color: var(--accent); font-size: 1.5rem; }
+    .nav-links { display: flex; gap: 2rem; align-items: center; }
+    .nav-links a {
+        color: var(--text); text-decoration: none;
+        font-size: 0.85rem; font-weight: 600; letter-spacing: 0.05em;
+        opacity: 0.8; transition: opacity 0.2s, color 0.2s;
+    }
+    .nav-links a:hover, .nav-links a.active { opacity: 1; color: var(--accent); }
+
+    /* ── Portals Dropdown ── */
+    .portal-dropdown { position: relative; }
+    .dropdown-toggle { display: flex; align-items: center; gap: 0.35rem; cursor: pointer; }
+    .dropdown-toggle i { font-size: 0.7rem; transition: transform 0.3s; }
+    .portal-dropdown:hover .dropdown-toggle i { transform: rotate(180deg); }
+    .dropdown-menu {
+        position: absolute; top: calc(100% + 0.8rem); right: 0;
+        background: var(--nav-bg); backdrop-filter: blur(20px);
+        border: 1px solid var(--card-border); border-radius: 12px;
+        padding: 0.5rem; min-width: 200px;
+        opacity: 0; pointer-events: none; transform: translateY(-8px);
+        transition: opacity 0.25s, transform 0.25s;
+        box-shadow: 0 12px 40px rgba(0,0,0,0.3); z-index: 100;
+    }
+    .portal-dropdown:hover .dropdown-menu { opacity: 1; pointer-events: all; transform: translateY(0); }
+    .dropdown-menu a {
+        display: flex; align-items: center; gap: 0.75rem;
+        padding: 0.7rem 1rem; border-radius: 8px;
+        color: var(--text); font-size: 0.85rem; font-weight: 600;
+        opacity: 0.85; text-decoration: none;
+        transition: background 0.2s, opacity 0.2s;
+    }
+    .dropdown-menu a:hover { background: rgba(240,165,0,0.12); opacity: 1; color: var(--accent); }
+    .dropdown-menu a i { color: var(--accent); width: 16px; text-align: center; }
+
+    /* ======= HERO BANNER ======= */
+    .contact-hero {
+        position: relative; padding: 8rem 0 5rem;
+        background: linear-gradient(135deg, #06101f 0%, #0a1e4a 40%, #0e2d6b 70%, #061430 100%);
+        overflow: hidden; text-align: center; color: #fff;
+        margin-top: 64px; transition: background 0.6s ease;
+    }
+    body.white-mode .contact-hero {
+        background: linear-gradient(135deg, #c8d8ff 0%, #dce8ff 40%, #e8d8ff 70%, #d0dcff 100%);
+        color: #1a1a2e;
+    }
+    body.white-mode .contact-hero h1 { color: #1a1a2e; text-shadow: none; }
+    body.white-mode .contact-hero p { color: #445; }
+    body.white-mode .breadcrumb { color: #445; }
+    body.white-mode .breadcrumb a { color: #1a3a6e; }
+    body.white-mode .contact-hero-overlay {
+        background: radial-gradient(ellipse 60% 55% at 50% 50%, rgba(200,220,255,0.25) 0%, rgba(180,200,255,0.08) 100%);
+    }
+    body.white-mode .hero-blob-1 { background: rgba(26,115,232,0.07); }
+    body.white-mode .hero-blob-2 { background: rgba(108,99,255,0.07); }
+    body.white-mode .hero-blob-3 { background: rgba(240,165,0,0.06); }
+    body.white-mode .hero-grid {
+        background-image:
+            linear-gradient(rgba(26,58,110,0.08) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(26,58,110,0.08) 1px, transparent 1px);
+    }
+    .contact-hero-overlay {
+        position: absolute; inset: 0;
+        background: radial-gradient(ellipse 60% 55% at 50% 50%, rgba(10,25,65,0.45) 0%, rgba(5,12,32,0.80) 100%);
+    }
+    .hero-blob {
+        position: absolute; border-radius: 50%;
+        background: rgba(26,115,232,0.12); filter: blur(40px); pointer-events: none;
+    }
+    .hero-blob-1 { width:400px;height:400px;top:-120px;left:-80px; animation:hb1 15s ease-in-out infinite; }
+    .hero-blob-2 { width:300px;height:300px;bottom:-60px;right:-60px; animation:hb2 18s ease-in-out infinite 2s; background:rgba(108,99,255,0.12); }
+    .hero-blob-3 { width:200px;height:200px;top:30%;left:60%; animation:hb3 12s ease-in-out infinite 1s; background:rgba(240,165,0,0.10); }
+    @keyframes hb1 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(20px,-30px)} }
+    @keyframes hb2 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-25px,20px)} }
+    @keyframes hb3 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(15px,-20px)} }
+
+    .hero-grid {
+        position: absolute; bottom:0; left:-10%; right:-10%; height:45%;
+        background-image:
+            linear-gradient(rgba(255,255,255,0.06) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,0.06) 1px, transparent 1px);
+        background-size: 60px 60px;
+        transform: perspective(500px) rotateX(62deg); transform-origin: bottom center;
+        mask-image: linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 70%);
+        -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 70%);
+    }
+    .contact-hero-content { position: relative; z-index: 5; }
+    .contact-hero h1 {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: clamp(3rem, 7vw, 5rem); font-weight: 700;
+        margin-bottom: 0.6rem; text-shadow: 0 4px 30px rgba(0,0,0,0.5);
+    }
+    .contact-hero h1 span { color: var(--accent); }
+    .contact-hero p { font-size: 1.1rem; opacity: 0.85; letter-spacing: 0.08em; margin-bottom: 1.5rem; text-transform: uppercase; }
+    .breadcrumb {
+        display:flex; align-items:center; justify-content:center; gap:0.5rem;
+        font-size:0.9rem; opacity:0.72; color:#fff;
+    }
+    .breadcrumb a { color:#fff; text-decoration:none; }
+    .hero-wave { position:absolute; bottom:-1px; left:0; right:0; z-index:6; line-height:0; }
+    .hero-wave svg { display:block; width:100%; height:80px; }
+
+    /* ======= COMMON ======= */
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+    section { padding: 5rem 0; }
+
+    .section-tag {
+        display: inline-block; font-size: 0.72rem; font-weight: 700;
+        letter-spacing: 0.2em; text-transform: uppercase;
+        color: var(--accent); background: rgba(240,165,0,0.15);
+        border: 1px solid rgba(240,165,0,0.3);
+        padding: 0.3rem 0.9rem; border-radius: 50px; margin-bottom: 1rem;
+    }
+    .section-title {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: clamp(1.8rem, 3vw, 2.6rem); font-weight: 700;
+        color: var(--heading-color); margin-bottom: 0.5rem; line-height: 1.1;
+    }
+
+    /* ======= CONTACT GRID ======= */
+    .contact-grid {
+        display: grid; grid-template-columns: 1fr 1fr; gap: 3rem;
+    }
+
+    /* ======= INFO CARDS ======= */
+    .contact-card {
+        background: var(--card-bg); border: 1px solid var(--card-border);
+        backdrop-filter: blur(16px); border-radius: 16px;
+        padding: 1.6rem; margin-bottom: 1.2rem;
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .contact-card:hover { transform: translateY(-4px); box-shadow: 0 16px 48px rgba(0,0,0,0.2); }
+    .contact-card:last-child { margin-bottom: 0; }
+    .contact-card-inner { display:flex; align-items:flex-start; gap:1.2rem; }
+    .contact-icon {
+        width:52px; height:52px; flex-shrink:0;
+        background: var(--icon-bg); border: 1px solid var(--icon-border);
+        border-radius: 14px; display:flex; align-items:center; justify-content:center;
+        box-shadow: 0 4px 14px rgba(240,165,0,0.2);
+    }
+    .contact-icon i { color: var(--accent); font-size: 1.3rem; }
+    .contact-card h4 { margin-bottom:0.4rem; color: var(--heading-color); font-size:1rem; font-weight:700; }
+    .contact-card p { color: var(--info-text); line-height:1.75; font-size:0.92rem; }
+
+    /* ======= FORM ======= */
+    .form-card {
+        background: var(--card-bg); border: 1px solid var(--card-border);
+        backdrop-filter: blur(20px); border-radius: 20px;
+        padding: 2.5rem; box-shadow: 0 12px 48px rgba(0,0,0,0.2);
+    }
+    .form-group { margin-bottom: 1.4rem; }
+    .form-group label {
+        display:block; font-size:0.82rem; font-weight:700;
+        color: var(--label-color); margin-bottom:0.45rem;
+        letter-spacing: 0.05em; text-transform: uppercase;
+    }
+    .form-group label span { color: #ff6b6b; }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        width:100%; padding:0.82rem 1.1rem;
+        background: var(--input-bg); border: 1.5px solid var(--input-border);
+        border-radius: 10px; font-family:'Raleway',sans-serif;
+        font-size:0.92rem; color: var(--text);
+        transition: border-color 0.25s, box-shadow 0.25s; outline:none;
+    }
+    body.white-mode .form-group input,
+    body.white-mode .form-group select,
+    body.white-mode .form-group textarea { background: white; }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(240,165,0,0.15);
+    }
+    .form-group textarea { height:130px; resize:vertical; }
+    select option { background: #1a3a6e; color: white; }
+    body.white-mode select option { background: white; color: #1a1a2e; }
+
+    .btn-submit {
+        width:100%; padding:0.9rem 1rem;
+        background: linear-gradient(135deg, var(--accent), var(--accent2));
+        color:#fff; border:none; border-radius:12px;
+        font-family:'Raleway',sans-serif; font-size:1rem; font-weight:700;
+        cursor:pointer; letter-spacing:0.05em;
+        display:flex; align-items:center; justify-content:center; gap:0.75rem;
+        box-shadow: 0 6px 24px rgba(240,165,0,0.35);
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+    .btn-submit:hover { transform:translateY(-3px); box-shadow:0 12px 36px rgba(240,165,0,0.5); }
+
+    /* ======= DIVIDER ======= */
+    .glow-divider {
+        height:2px; margin: 0 8%;
+        background: linear-gradient(90deg, transparent, rgba(240,165,0,0.35) 30%, rgba(224,92,42,0.35) 70%, transparent);
+        border-radius: 2px;
+    }
+
+    /* ======= MAP ======= */
+    .map-section { padding: 4rem 0 6rem; }
+    .map-wrapper {
+        border-radius: 20px; overflow:hidden;
+        box-shadow: 0 12px 48px rgba(0,0,0,0.25);
+        border: 1px solid var(--card-border); height:450px;
+    }
+    .map-wrapper iframe { width:100%; height:100%; border:0; display:block; }
+
+    /* ======= FOOTER ======= */
+    footer {
+        background: rgba(10,20,50,0.9); backdrop-filter: blur(20px);
+        border-top: 1px solid rgba(255,255,255,0.08); padding: 4rem 0 2rem;
+    }
+    body.white-mode footer { background: rgba(26,58,110,0.95); }
+    .footer-grid {
+        max-width:1200px; margin:0 auto; padding:0 2rem;
+        display:grid; grid-template-columns:2fr 1fr 1fr 1.5fr;
+        gap:3rem; margin-bottom:3rem;
+    }
+    .footer-logo {
+        display:flex; align-items:center; gap:0.7rem;
+        font-family:'Cormorant Garamond',serif; font-size:1.2rem; font-weight:700;
+        color:white; margin-bottom:1rem;
+    }
+    .footer-logo i { color:var(--accent); }
+    .footer-desc { font-size:0.88rem; opacity:0.65; line-height:1.7; color:white; }
+    .social-links { display:flex; gap:0.7rem; margin-top:1.2rem; }
+    .social-link {
+        width:36px; height:36px; background:rgba(255,255,255,0.1);
+        border-radius:50%; display:flex; align-items:center; justify-content:center;
+        color:white; font-size:0.85rem; text-decoration:none;
+        transition:background 0.2s, transform 0.2s;
+    }
+    .social-link:hover { background:var(--accent); transform:translateY(-3px); }
+    .footer-col h4 { color:white; font-size:0.85rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; margin-bottom:1.2rem; }
+    .footer-links { list-style:none; }
+    .footer-links li { margin-bottom:0.6rem; }
+    .footer-links a { color:rgba(255,255,255,0.6); text-decoration:none; font-size:0.88rem; transition:color 0.2s; }
+    .footer-links a:hover { color:var(--accent); }
+    .footer-contact { list-style:none; }
+    .footer-contact li { display:flex; gap:0.8rem; color:rgba(255,255,255,0.65); font-size:0.88rem; margin-bottom:0.8rem; align-items:flex-start; line-height:1.5; }
+    .footer-contact i { color:var(--accent); margin-top:2px; flex-shrink:0; }
+    .footer-bottom {
+        max-width:1200px; margin:0 auto; padding:2rem 2rem 0;
+        border-top:1px solid rgba(255,255,255,0.1);
+        display:flex; justify-content:space-between; align-items:center;
+        font-size:0.82rem; color:rgba(255,255,255,0.5);
+    }
+    .footer-bottom a { color:rgba(255,255,255,0.5); text-decoration:none; margin-left:1.5rem; transition:color 0.2s; }
+    .footer-bottom a:hover { color:var(--accent); }
+
+    @media(max-width:768px) {
+        .contact-grid { grid-template-columns:1fr; }
+        .footer-grid { grid-template-columns:1fr 1fr; }
+        .nav-links { display:none; }
+    }
+    @media(max-width:480px) {
+        .footer-grid { grid-template-columns:1fr; }
+        .footer-bottom { flex-direction:column; gap:1rem; text-align:center; }
+    }
+    </style>
+</head>
+<body>
+
+    <!-- White BG Overlay -->
+    <div class="white-bg-overlay"></div>
+
+    <!-- 3D Canvas Background -->
+    <canvas id="bg-canvas"></canvas>
+
+    <!-- Theme Toggle -->
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+        <i class="fas fa-cube" id="toggle-icon"></i>
+        <div class="toggle-knob"></div>
+        <span id="toggle-label">3D</span>
+    </button>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-inner">
+            <a href="index.html" class="logo">
+                <i class="fas fa-graduation-cap"></i>
+                Bright Future Academy
+            </a>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="about.html">About Us</a>
+                <a href="admissions.html">Admissions</a>
+                <a href="academics.html">Academics</a>
+                <a href="gallery.html">Gallery</a>
+                <a href="contact.html" class="active">Contact</a>
+                <div class="portal-dropdown">
+                    <a href="#" class="dropdown-toggle">Portals <i class="fas fa-chevron-down"></i></a>
+                    <div class="dropdown-menu">
+                        <a href="student-login.html"><i class="fas fa-user-graduate"></i> Student Portal</a>
+                        <a href="teacher-login.html"><i class="fas fa-chalkboard-teacher"></i> Teacher Portal</a>
+                        <a href="admin-login.html"><i class="fas fa-user-shield"></i> Admin Portal</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Banner -->
+    <section class="contact-hero">
+        <div class="hero-blob hero-blob-1"></div>
+        <div class="hero-blob hero-blob-2"></div>
+        <div class="hero-blob hero-blob-3"></div>
+        <div class="hero-grid"></div>
+        <div class="contact-hero-overlay"></div>
+        <div class="container contact-hero-content">
+            <h1>Contact <span>Us</span></h1>
+            <p>We're Here to Help</p>
+            <div class="breadcrumb">
+                <a href="index.html">Home</a>
+                <i class="fas fa-chevron-right" style="font-size:0.65rem;"></i>
+                <span>Contact</span>
+            </div>
+        </div>
+        <div class="hero-wave">
+            <svg viewBox="0 0 1440 80" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M0,40 C240,80 480,0 720,40 C960,80 1200,0 1440,40 L1440,80 L0,80 Z" fill="transparent"/>
+            </svg>
+        </div>
+    </section>
+
+    <!-- Contact Main -->
+    <section>
+        <div class="container">
+            <div class="contact-grid">
+
+                <!-- LEFT: Info Cards -->
+                <div>
+                    <div class="section-tag">Get in Touch</div>
+                    <h2 class="section-title">Contact Information</h2>
+                    <p style="color:var(--sub-color); margin-bottom:2rem; line-height:1.7; font-size:0.95rem;">
+                        Reach out through any of the channels below and we'll get back to you promptly.
+                    </p>
+
+                    <div class="contact-card">
+                        <div class="contact-card-inner">
+                            <div class="contact-icon"><i class="fas fa-map-marker-alt"></i></div>
+                            <div>
+                                <h4>Address</h4>
+                                <p>Bright Future Academy<br>Sector 15, Rohini<br>New Delhi – 110085, India</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="contact-card">
+                        <div class="contact-card-inner">
+                            <div class="contact-icon"><i class="fas fa-phone"></i></div>
+                            <div>
+                                <h4>Phone</h4>
+                                <p>+91 11 2345 6789<br>+91 98765 43210<br>+91 98765 43211 (Admissions)</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="contact-card">
+                        <div class="contact-card-inner">
+                            <div class="contact-icon"><i class="fas fa-envelope"></i></div>
+                            <div>
+                                <h4>Email</h4>
+                                <p>info@brightfuture.edu.in<br>admissions@brightfuture.edu.in<br>principal@brightfuture.edu.in</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="contact-card">
+                        <div class="contact-card-inner">
+                            <div class="contact-icon"><i class="fas fa-clock"></i></div>
+                            <div>
+                                <h4>Office Hours</h4>
+                                <p>Monday – Friday: 8:00 AM – 4:00 PM<br>Saturday: 8:00 AM – 2:00 PM<br>Sunday: Closed</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RIGHT: Contact Form -->
+                <div>
+                    <div class="form-card">
+                        <div class="section-tag">Send Message</div>
+                        <h2 class="section-title">Contact Form</h2>
+                        <form id="contactForm" onsubmit="return handleContact(event)" style="margin-top:1.8rem;">
+                            <div class="form-group">
+                                <label>Full Name <span>*</span></label>
+                                <input type="text" name="name" placeholder="Your full name" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Email <span>*</span></label>
+                                <input type="email" name="email" placeholder="you@example.com" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Phone Number <span>*</span></label>
+                                <input type="tel" name="phone" placeholder="+91 XXXXX XXXXX" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Subject <span>*</span></label>
+                                <select name="subject" required>
+                                    <option value="">Select Subject</option>
+                                    <option value="admission">Admission Inquiry</option>
+                                    <option value="general">General Inquiry</option>
+                                    <option value="complaint">Complaint / Feedback</option>
+                                    <option value="career">Career Opportunity</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Message <span>*</span></label>
+                                <textarea name="message" placeholder="Write your message here..." required></textarea>
+                            </div>
+                            <button type="submit" class="btn-submit">
+                                <span>Send Message</span>
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Glow Divider -->
+    <div class="glow-divider"></div>
+
+    <!-- Map Section -->
+    <section class="map-section">
+        <div class="container">
+            <div style="text-align:center; margin-bottom:2.5rem;">
+                <div class="section-tag">Find Us</div>
+                <h2 class="section-title">Our Location</h2>
+                <p style="color:var(--sub-color); margin-top:0.5rem;">Sector 15, Rohini, New Delhi – 110085</p>
+            </div>
+            <div class="map-wrapper">
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3500.207416889326!2d77.11826931508066!3d28.693859882405657!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390d03a3a6a3b3b3%3A0x3b3a3b3b3a3b3b3b!2sRohini%2C%20Delhi!5e0!3m2!1sen!2sin!4v1234567890123!5m2!1sen!2sin"
+                    allowfullscreen="" loading="lazy"></iframe>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-grid">
+            <div>
+                <div class="footer-logo"><i class="fas fa-graduation-cap"></i> Bright Future Academy</div>
+                <p class="footer-desc">Empowering young minds with quality education and holistic development since 1995.</p>
+                <div class="social-links">
+                    <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-youtube"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+            <div>
+                <h4>Quick Links</h4>
+                <ul class="footer-links">
+                    <li><a href="about.html">About Us</a></li>
+                    <li><a href="admissions.html">Admissions</a></li>
+                    <li><a href="academics.html">Academics</a></li>
+                    <li><a href="gallery.html">Gallery</a></li>
+                    <li><a href="#">Careers</a></li>
+                    <li><a href="#">Downloads</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>Portals</h4>
+                <ul class="footer-links">
+                    <li><a href="#">Student Login</a></li>
+                    <li><a href="#">Teacher Login</a></li>
+                    <li><a href="#">Admin Login</a></li>
+                    <li><a href="#">Parent Portal</a></li>
+                    <li><a href="#">Alumni Portal</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>Contact Us</h4>
+                <ul class="footer-contact">
+                    <li><i class="fas fa-map-marker-alt"></i><span>Sector 15, Rohini<br>New Delhi – 110085</span></li>
+                    <li><i class="fas fa-phone"></i><span>+91 11 2345 6789</span></li>
+                    <li><i class="fas fa-envelope"></i><span>info@brightfuture.edu.in</span></li>
+                    <li><i class="fas fa-clock"></i><span>Mon–Sat: 8:00 AM – 4:00 PM</span></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2024 Bright Future Academy. All Rights Reserved.</p>
+            <div>
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms &amp; Conditions</a>
+                <a href="#">Sitemap</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+    // ============ THEME TOGGLE ============
+    let isWhiteMode = false;
+    function toggleTheme() {
+        isWhiteMode = !isWhiteMode;
+        document.body.classList.toggle('white-mode', isWhiteMode);
+        document.getElementById('toggle-label').textContent = isWhiteMode ? 'White' : '3D';
+        document.getElementById('toggle-icon').className = isWhiteMode ? 'fas fa-sun' : 'fas fa-cube';
+    }
+
+    // ============ 3D CANVAS BACKGROUND ============
+    const canvas = document.getElementById('bg-canvas');
+    const ctx = canvas.getContext('2d');
+    let W, H, particles, shapes, mouse = {x: 0, y: 0};
+    const NUM_PARTICLES = 90;
+    const CONNECT_DIST = 160;
+
+    function resize() {
+        W = canvas.width = window.innerWidth;
+        H = canvas.height = window.innerHeight;
+    }
+
+    class Particle {
+        constructor() { this.reset(true); }
+        reset(init = false) {
+            this.x = Math.random() * W;
+            this.y = init ? Math.random() * H : H + 10;
+            this.z = 0.3 + Math.random() * 0.7;
+            this.vx = (Math.random() - 0.5) * 0.4 * this.z;
+            this.vy = -(0.2 + Math.random() * 0.5) * this.z;
+            this.r = 1.5 + this.z * 2.5;
+            this.alpha = 0.4 + this.z * 0.5;
+            const colors = ['#f0a500','#e05c2a','#5b8df0','#a0c4ff','#ffffff'];
+            this.color = colors[Math.floor(Math.random() * colors.length)];
+            this.life = 0;
+            this.maxLife = 300 + Math.random() * 500;
+        }
+        update() {
+            this.x += this.vx; this.y += this.vy;
+            const dx = this.x - mouse.x, dy = this.y - mouse.y;
+            const dist = Math.sqrt(dx*dx + dy*dy);
+            if (dist < 150) {
+                const force = (150 - dist) / 150 * 0.05;
+                this.vx += dx / dist * force;
+                this.vy += dy / dist * force;
+            }
+            this.vx *= 0.99; this.vy *= 0.99; this.life++;
+            if (this.y < -20 || this.life > this.maxLife || this.x < -50 || this.x > W + 50) this.reset();
+        }
+        draw() {
+            ctx.save();
+            ctx.globalAlpha = this.alpha;
+            ctx.fillStyle = this.color;
+            ctx.shadowBlur = 8 * this.z;
+            ctx.shadowColor = this.color;
+            ctx.beginPath(); ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2); ctx.fill();
+            ctx.restore();
+        }
+    }
+
+    class FloatShape {
+        constructor() { this.init(); }
+        init() {
+            this.x = Math.random() * W; this.y = Math.random() * H;
+            this.size = 20 + Math.random() * 50;
+            this.rot = Math.random() * Math.PI * 2;
+            this.rotSpeed = (Math.random() - 0.5) * 0.008;
+            this.vx = (Math.random() - 0.5) * 0.3;
+            this.vy = (Math.random() - 0.5) * 0.2;
+            this.alpha = 0.04 + Math.random() * 0.08;
+            this.type = Math.floor(Math.random() * 3);
+        }
+        update() {
+            this.x += this.vx; this.y += this.vy; this.rot += this.rotSpeed;
+            if (this.x < -100) this.x = W + 100;
+            if (this.x > W + 100) this.x = -100;
+            if (this.y < -100) this.y = H + 100;
+            if (this.y > H + 100) this.y = -100;
+        }
+        draw() {
+            ctx.save();
+            ctx.translate(this.x, this.y); ctx.rotate(this.rot);
+            ctx.globalAlpha = this.alpha; ctx.strokeStyle = '#5b8df0'; ctx.lineWidth = 1;
+            const s = this.size;
+            if (this.type === 0) {
+                ctx.strokeRect(-s/2, -s/2, s, s);
+                ctx.rotate(Math.PI/4);
+                ctx.strokeRect(-s/3, -s/3, s*0.67, s*0.67);
+            } else if (this.type === 1) {
+                ctx.beginPath(); ctx.moveTo(0,-s/2); ctx.lineTo(s/2,s/2); ctx.lineTo(-s/2,s/2); ctx.closePath(); ctx.stroke();
+            } else {
+                ctx.beginPath(); ctx.moveTo(0,-s/2); ctx.lineTo(s/2,0); ctx.lineTo(0,s/2); ctx.lineTo(-s/2,0); ctx.closePath(); ctx.stroke();
+            }
+            ctx.restore();
+        }
+    }
+
+    function init() {
+        resize();
+        particles = Array.from({length: NUM_PARTICLES}, () => new Particle());
+        shapes = Array.from({length: 14}, () => new FloatShape());
+    }
+
+    function drawBackground() {
+        const grad = ctx.createLinearGradient(0, 0, W, H);
+        grad.addColorStop(0, '#040d1e');
+        grad.addColorStop(0.4, '#061430');
+        grad.addColorStop(0.7, '#0a1a40');
+        grad.addColorStop(1, '#050c22');
+        ctx.fillStyle = grad; ctx.fillRect(0, 0, W, H);
+        const rg = ctx.createRadialGradient(W*0.5, 0, 0, W*0.5, 0, H*0.7);
+        rg.addColorStop(0, 'rgba(91,141,240,0.12)');
+        rg.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = rg; ctx.fillRect(0, 0, W, H);
+    }
+
+    function drawConnections() {
+        for (let i = 0; i < particles.length; i++) {
+            for (let j = i + 1; j < particles.length; j++) {
+                const dx = particles[i].x - particles[j].x;
+                const dy = particles[i].y - particles[j].y;
+                const dist = Math.sqrt(dx*dx + dy*dy);
+                if (dist < CONNECT_DIST) {
+                    ctx.save();
+                    ctx.globalAlpha = (1 - dist / CONNECT_DIST) * 0.25;
+                    ctx.strokeStyle = '#5b8df0'; ctx.lineWidth = 0.6;
+                    ctx.beginPath(); ctx.moveTo(particles[i].x, particles[i].y); ctx.lineTo(particles[j].x, particles[j].y); ctx.stroke();
+                    ctx.restore();
+                }
+            }
+        }
+    }
+
+    function animate() {
+        drawBackground();
+        shapes.forEach(s => { s.update(); s.draw(); });
+        drawConnections();
+        particles.forEach(p => { p.update(); p.draw(); });
+        requestAnimationFrame(animate);
+    }
+
+    window.addEventListener('resize', resize);
+    window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+    init(); animate();
+
+    // ============ FORM HANDLER ============
+    function handleContact(e) {
+        e.preventDefault();
+        const btn = e.target.querySelector('.btn-submit');
+        btn.innerHTML = '<i class="fas fa-check"></i> <span>Message Sent!</span>';
+        btn.style.background = 'linear-gradient(135deg,#22c55e,#16a34a)';
+        setTimeout(() => {
+            btn.innerHTML = '<span>Send Message</span><i class="fas fa-paper-plane"></i>';
+            btn.style.background = '';
+            e.target.reset();
+        }, 3000);
+        return false;
+    }
+    </script>
+</body>
+</html>

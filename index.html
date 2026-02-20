@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bright Future Academy - Best School in Delhi</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary: #0a1628;
+            --accent: #f59e0b;
+            --accent2: #3b82f6;
+            --accent3: #10b981;
+            --light: #f8fafc;
+            --text: #1e293b;
+            --muted: #64748b;
+            --card-bg: rgba(255,255,255,0.06);
+            --glass: rgba(255,255,255,0.08);
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--primary);
+            color: var(--light);
+            overflow-x: hidden;
+            transition: background 0.5s, color 0.5s;
+        }
+
+        /* ===== 3D CANVAS BACKGROUND (from academics) ===== */
+        #bg-canvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            transition: opacity 0.6s ease;
+        }
+
+        /* White mode overlay */
+        .white-bg-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(135deg, #f0f4ff 0%, #e8edf8 40%, #f5f0ff 100%);
+            z-index: 0;
+            opacity: 0;
+            transition: opacity 0.6s ease;
+            pointer-events: none;
+        }
+
+        body.light-theme #bg-canvas { opacity: 0; }
+        body.light-theme .white-bg-overlay { opacity: 1; }
+
+        /* ===== THEME TOGGLE BUTTON ===== */
+        #theme-toggle {
+            position: fixed;
+            bottom: 32px; right: 32px;
+            z-index: 9999;
+            background: linear-gradient(135deg, #f59e0b, #f97316);
+            border: none;
+            border-radius: 50px;
+            padding: 12px 20px;
+            display: flex; align-items: center; gap: 8px;
+            color: #fff;
+            font-family: 'Outfit', sans-serif;
+            font-size: 13px; font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 8px 30px rgba(245,158,11,0.45);
+            transition: all 0.3s;
+            letter-spacing: 0.5px;
+        }
+        #theme-toggle:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(245,158,11,0.6); }
+        #theme-toggle i { font-size: 15px; transition: transform 0.5s; }
+        #theme-toggle:hover i { transform: rotate(20deg); }
+
+        /* ===== WHITE / LIGHT THEME ===== */
+        body.light-theme {
+            background: #ffffff;
+            color: #1e293b;
+        }
+
+        /* Navbar */
+        body.light-theme .navbar {
+            background: rgba(255,255,255,0.92);
+            border-bottom: 1px solid rgba(0,0,0,0.08);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+        }
+        body.light-theme .navbar.scrolled { background: rgba(255,255,255,0.98); }
+        body.light-theme .nav-links a { color: #334155; }
+        body.light-theme .nav-links a:hover { color: #f59e0b; }
+        body.light-theme .nav-links a.active { color: #f59e0b; }
+        body.light-theme .dropdown-menu {
+            background: rgba(255,255,255,0.98);
+            border: 1px solid rgba(0,0,0,0.1);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.12);
+        }
+        body.light-theme .dropdown-menu a { color: #334155 !important; }
+        body.light-theme .dropdown-menu a:hover { background: rgba(245,158,11,0.08); }
+
+        /* Hero */
+        body.light-theme .hero { background: transparent; }
+        body.light-theme .hero-title { color: #1e293b; }
+        body.light-theme .hero-subtitle { color: #64748b; }
+        body.light-theme .stat-label { color: #94a3b8; }
+        body.light-theme .btn-secondary { background: rgba(0,0,0,0.06); color: #1e293b; border-color: rgba(0,0,0,0.15); }
+        body.light-theme .btn-secondary:hover { background: rgba(0,0,0,0.1); }
+        body.light-theme .hero-scroll { color: #94a3b8; }
+
+        /* About */
+        body.light-theme .about-intro { background: rgba(248,250,252,0.85); }
+        body.light-theme .section-title { color: #1e293b; }
+        body.light-theme .section-description, body.light-theme .section-subtitle { color: #64748b; }
+        body.light-theme .feature-point { color: #475569; }
+        body.light-theme .image-decoration { background: linear-gradient(135deg, rgba(245,158,11,0.2), rgba(59,130,246,0.1)); }
+
+        /* Principal */
+        body.light-theme .principal-message { background: transparent; }
+        body.light-theme .message-card {
+            background: #ffffff;
+            border: 1px solid rgba(0,0,0,0.08);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.08);
+        }
+        body.light-theme .message-content p { color: #475569; }
+        body.light-theme .quote-icon { color: rgba(245,158,11,0.3); }
+        body.light-theme .credentials { color: #94a3b8; }
+        body.light-theme .signature { border-top-color: rgba(0,0,0,0.08); }
+        body.light-theme .signature-title { color: #94a3b8; }
+
+        /* Highlights */
+        body.light-theme .highlights { background: rgba(248,250,252,0.85); }
+        body.light-theme .highlight-card {
+            background: #ffffff;
+            border: 1px solid rgba(0,0,0,0.07);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+        }
+        body.light-theme .highlight-card:hover { border-color: rgba(245,158,11,0.3); box-shadow: 0 12px 40px rgba(0,0,0,0.1); }
+        body.light-theme .highlight-card h3 { color: #1e293b; }
+        body.light-theme .highlight-card p { color: #64748b; }
+        body.light-theme .highlight-features span { color: #94a3b8; }
+
+        /* Testimonials */
+        body.light-theme .testimonials { background: transparent; }
+        body.light-theme .testimonial-card {
+            background: #ffffff;
+            border: 1px solid rgba(0,0,0,0.07);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+        }
+        body.light-theme .testimonial-card:hover { box-shadow: 0 12px 40px rgba(0,0,0,0.1); }
+        body.light-theme .testimonial-text { color: #475569; }
+        body.light-theme .author-info p { color: #94a3b8; }
+        body.light-theme .author-info h4 { color: #1e293b; }
+
+        /* Quick Links */
+        body.light-theme .quick-links { background: rgba(248,250,252,0.85); }
+        body.light-theme .quick-link-card {
+            background: #ffffff;
+            border: 1px solid rgba(0,0,0,0.07);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+        }
+        body.light-theme .quick-link-card:hover { box-shadow: 0 12px 40px rgba(0,0,0,0.1); }
+        body.light-theme .quick-link-card h3 { color: #1e293b; }
+        body.light-theme .quick-link-card p { color: #64748b; }
+
+        /* Footer */
+        body.light-theme .footer { background: #1e293b; border-top: none; }
+        body.light-theme .footer-description { color: rgba(248,250,252,0.45); }
+        body.light-theme .footer-links a { color: rgba(248,250,252,0.45); }
+        body.light-theme .footer-contact li { color: rgba(248,250,252,0.45); }
+        body.light-theme .footer-bottom-content p { color: rgba(248,250,252,0.3); }
+        body.light-theme .footer-bottom-links a { color: rgba(248,250,252,0.3); }
+        body.light-theme .footer-bottom { border-top-color: rgba(255,255,255,0.08); }
+        body.light-theme .section-tag { color: #f59e0b; }
+
+        /* ===== NAVBAR ===== */
+        .navbar {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 1000;
+            padding: 18px 0;
+            background: rgba(10,22,40,0.7);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(245,158,11,0.15);
+            transition: all 0.3s;
+        }
+        .navbar.scrolled {
+            padding: 12px 0;
+            background: rgba(10,22,40,0.95);
+        }
+        .container { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
+        .nav-wrapper { display: flex; align-items: center; justify-content: space-between; }
+        .logo {
+            display: flex; align-items: center; gap: 10px;
+            font-family: 'Cinzel', serif;
+            font-size: 20px; font-weight: 700;
+            color: var(--accent);
+            text-decoration: none;
+        }
+        .logo i { font-size: 24px; }
+        .nav-links { display: flex; align-items: center; gap: 32px; }
+        .nav-links a {
+            color: rgba(248,250,252,0.8);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            transition: color 0.2s;
+            position: relative;
+        }
+        .nav-links a::after {
+            content: '';
+            position: absolute; bottom: -4px; left: 0;
+            width: 0; height: 2px;
+            background: var(--accent);
+            transition: width 0.3s;
+        }
+        .nav-links a:hover { color: var(--accent); }
+        .nav-links a:hover::after { width: 100%; }
+        .nav-links a.active { color: var(--accent); }
+        .nav-links a.active::after { width: 100%; }
+        .portal-dropdown { position: relative; }
+        .dropdown-toggle { cursor: pointer; }
+        .dropdown-menu {
+            position: absolute; top: calc(100% + 12px); right: 0;
+            background: rgba(10,22,40,0.97);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(245,158,11,0.2);
+            border-radius: 12px;
+            padding: 8px;
+            min-width: 200px;
+            opacity: 0; visibility: hidden; transform: translateY(-8px);
+            transition: all 0.25s;
+        }
+        .portal-dropdown:hover .dropdown-menu { opacity: 1; visibility: visible; transform: translateY(0); }
+        .dropdown-menu a {
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            color: rgba(248,250,252,0.8) !important;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+        .dropdown-menu a::after { display: none; }
+        .dropdown-menu a:hover { background: rgba(245,158,11,0.1); color: var(--accent) !important; }
+
+        /* ===== HERO ===== */
+        .hero {
+            position: relative;
+            min-height: 100vh;
+            display: flex; align-items: center;
+            padding: 120px 0 60px;
+            z-index: 1;
+        }
+        .hero-content { max-width: 700px; position: relative; }
+        .hero-badge {
+            display: inline-block;
+            background: rgba(245,158,11,0.15);
+            border: 1px solid rgba(245,158,11,0.4);
+            color: var(--accent);
+            padding: 6px 18px;
+            border-radius: 50px;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 24px;
+            animation: fadeInUp 0.8s ease both;
+        }
+        .hero-title {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(44px, 6vw, 80px);
+            line-height: 1.1;
+            font-weight: 900;
+            margin-bottom: 24px;
+            animation: fadeInUp 0.8s ease 0.15s both;
+        }
+        .title-line { display: block; }
+        .gradient-text {
+            background: linear-gradient(135deg, #f59e0b, #fbbf24, #f97316);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .hero-subtitle {
+            font-size: 18px;
+            color: rgba(248,250,252,0.65);
+            line-height: 1.7;
+            margin-bottom: 36px;
+            max-width: 540px;
+            animation: fadeInUp 0.8s ease 0.3s both;
+        }
+        .hero-buttons {
+            display: flex; gap: 16px; flex-wrap: wrap;
+            margin-bottom: 56px;
+            animation: fadeInUp 0.8s ease 0.45s both;
+        }
+        .btn {
+            display: inline-flex; align-items: center; gap: 10px;
+            padding: 14px 28px;
+            border-radius: 50px;
+            font-size: 15px; font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+            cursor: pointer; border: none;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #f59e0b, #f97316);
+            color: #fff;
+            box-shadow: 0 8px 30px rgba(245,158,11,0.35);
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(245,158,11,0.5); }
+        .btn-secondary {
+            background: rgba(255,255,255,0.08);
+            color: var(--light);
+            border: 1px solid rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+        }
+        .btn-secondary:hover { background: rgba(255,255,255,0.14); transform: translateY(-2px); }
+        .btn-outline {
+            background: transparent;
+            color: var(--accent);
+            border: 2px solid rgba(245,158,11,0.5);
+        }
+        .btn-outline:hover { background: rgba(245,158,11,0.1); transform: translateY(-2px); }
+
+        .hero-stats {
+            display: flex; gap: 40px; flex-wrap: wrap;
+            animation: fadeInUp 0.8s ease 0.6s both;
+        }
+        .stat-item { text-align: center; }
+        .stat-number {
+            font-family: 'Cinzel', serif;
+            font-size: 34px; font-weight: 900;
+            color: var(--accent);
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+        .stat-label { font-size: 12px; color: rgba(248,250,252,0.5); letter-spacing: 0.5px; }
+
+        .hero-scroll {
+            position: absolute;
+            bottom: 40px; left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            color: rgba(248,250,252,0.4);
+            font-size: 11px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            z-index: 2;
+        }
+        .scroll-indicator {
+            width: 2px; height: 40px;
+            background: linear-gradient(to bottom, rgba(245,158,11,0.6), transparent);
+            margin: 8px auto 0;
+            animation: scrollPulse 2s ease-in-out infinite;
+        }
+        @keyframes scrollPulse { 0%,100%{opacity:0.4; transform:scaleY(1)} 50%{opacity:1; transform:scaleY(1.1)} }
+
+        /* ===== SECTIONS COMMON ===== */
+        section { position: relative; z-index: 1; }
+        .section-tag {
+            display: inline-block;
+            color: var(--accent);
+            font-size: 12px; font-weight: 700;
+            letter-spacing: 2px; text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+        .section-title {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(28px, 4vw, 48px);
+            font-weight: 900;
+            line-height: 1.2;
+            margin-bottom: 16px;
+        }
+        .section-subtitle, .section-description {
+            color: rgba(248,250,252,0.6);
+            font-size: 16px;
+            line-height: 1.75;
+            max-width: 600px;
+        }
+        .section-header.centered { text-align: center; }
+        .section-header.centered .section-subtitle { margin: 0 auto; }
+
+        /* ===== ABOUT INTRO ===== */
+        .about-intro { padding: 100px 0; background: rgba(0,0,0,0.3); }
+        .section-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px; align-items: center;
+        }
+        .intro-features { margin: 24px 0 32px; display: flex; flex-direction: column; gap: 10px; }
+        .feature-point {
+            display: flex; align-items: center; gap: 10px;
+            font-size: 14px; color: rgba(248,250,252,0.75);
+        }
+        .feature-point i { color: var(--accent3); font-size: 16px; }
+        .image-wrapper { position: relative; }
+        .image-wrapper img {
+            width: 100%; border-radius: 20px;
+            display: block;
+            box-shadow: 0 40px 80px rgba(0,0,0,0.5);
+            position: relative; z-index: 1;
+        }
+        .image-decoration {
+            position: absolute; inset: -16px;
+            border-radius: 24px;
+            background: linear-gradient(135deg, rgba(245,158,11,0.3), rgba(59,130,246,0.15));
+            z-index: 0;
+        }
+
+        /* ===== PRINCIPAL MESSAGE ===== */
+        .principal-message { padding: 100px 0; }
+        .message-card {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 24px;
+            padding: 60px;
+            backdrop-filter: blur(10px);
+        }
+        .message-grid { display: grid; grid-template-columns: 280px 1fr; gap: 60px; align-items: start; }
+        .principal-image { text-align: center; }
+        .image-frame { position: relative; margin-bottom: 24px; }
+        .image-frame img { width: 220px; height: 280px; object-fit: cover; border-radius: 16px; position: relative; z-index: 1; }
+        .frame-decoration {
+            position: absolute;
+            top: -10px; left: -10px; right: -10px; bottom: -10px;
+            border: 2px solid rgba(245,158,11,0.4);
+            border-radius: 20px;
+        }
+        .principal-info h4 { font-family: 'Cinzel', serif; font-size: 20px; margin-bottom: 4px; }
+        .principal-info p { color: var(--accent); font-size: 13px; margin-bottom: 4px; }
+        .credentials { font-size: 12px; color: rgba(248,250,252,0.5); }
+        .quote-icon { font-size: 40px; color: rgba(245,158,11,0.3); margin-bottom: 16px; }
+        .message-content h3 { font-family: 'Cinzel', serif; font-size: 26px; margin-bottom: 20px; }
+        .message-content p { color: rgba(248,250,252,0.7); line-height: 1.8; margin-bottom: 14px; font-size: 15px; }
+        .signature { margin-top: 24px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; }
+        .signature-line { font-family: 'Cinzel', serif; font-size: 18px; color: var(--accent); }
+        .signature-title { font-size: 13px; color: rgba(248,250,252,0.5); margin-top: 4px; }
+
+        /* ===== HIGHLIGHTS ===== */
+        .highlights { padding: 100px 0; background: rgba(0,0,0,0.3); }
+        .highlights-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-top: 60px; }
+        .highlight-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 20px;
+            padding: 32px 24px;
+            transition: all 0.4s;
+            position: relative; overflow: hidden;
+        }
+        .highlight-card::before {
+            content: '';
+            position: absolute; top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+        .highlight-card:hover { transform: translateY(-8px); background: rgba(255,255,255,0.08); border-color: rgba(245,158,11,0.2); }
+        .highlight-card:hover::before { opacity: 1; }
+        .highlight-icon {
+            width: 60px; height: 60px;
+            background: linear-gradient(135deg, rgba(245,158,11,0.2), rgba(249,115,22,0.1));
+            border-radius: 16px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 24px; color: var(--accent);
+            margin-bottom: 20px;
+        }
+        .highlight-card h3 { font-family: 'Cinzel', serif; font-size: 18px; margin-bottom: 12px; }
+        .highlight-card p { color: rgba(248,250,252,0.6); font-size: 14px; line-height: 1.7; margin-bottom: 20px; }
+        .highlight-features { display: flex; flex-direction: column; gap: 8px; }
+        .highlight-features span {
+            font-size: 12px;
+            color: rgba(248,250,252,0.5);
+            display: flex; align-items: center; gap: 6px;
+        }
+        .highlight-features span i { color: var(--accent3); font-size: 10px; }
+
+        /* ===== TESTIMONIALS ===== */
+        .testimonials { padding: 100px 0; }
+        .testimonials-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 24px; margin-top: 60px; }
+        .testimonial-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 20px;
+            padding: 32px;
+            transition: all 0.4s;
+        }
+        .testimonial-card:hover { transform: translateY(-6px); border-color: rgba(245,158,11,0.2); }
+        .testimonial-rating { color: var(--accent); font-size: 14px; margin-bottom: 16px; letter-spacing: 2px; }
+        .testimonial-text { color: rgba(248,250,252,0.7); font-size: 14px; line-height: 1.8; margin-bottom: 24px; }
+        .testimonial-author { display: flex; align-items: center; gap: 14px; }
+        .author-image img { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(245,158,11,0.3); }
+        .author-info h4 { font-size: 15px; font-weight: 600; margin-bottom: 2px; }
+        .author-info p { font-size: 12px; color: rgba(248,250,252,0.5); }
+
+        /* ===== QUICK LINKS ===== */
+        .quick-links { padding: 80px 0; background: rgba(0,0,0,0.3); }
+        .quick-links-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 24px; }
+        .quick-link-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 20px;
+            padding: 36px;
+            transition: all 0.4s;
+            text-align: center;
+        }
+        .quick-link-card:hover { transform: translateY(-6px); border-color: rgba(59,130,246,0.3); }
+        .quick-link-icon {
+            width: 70px; height: 70px;
+            background: linear-gradient(135deg, rgba(59,130,246,0.2), rgba(16,185,129,0.1));
+            border-radius: 20px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 28px; color: var(--accent2);
+            margin: 0 auto 20px;
+        }
+        .quick-link-card h3 { font-family: 'Cinzel', serif; font-size: 20px; margin-bottom: 8px; }
+        .quick-link-card p { color: rgba(248,250,252,0.5); font-size: 14px; margin-bottom: 20px; }
+        .link-arrow {
+            display: inline-flex; align-items: center; gap: 8px;
+            color: var(--accent2);
+            font-size: 14px; font-weight: 600;
+            text-decoration: none;
+            transition: gap 0.2s;
+        }
+        .link-arrow:hover { gap: 14px; }
+
+        /* ===== FOOTER ===== */
+        .footer { position: relative; z-index: 1; background: rgba(5,10,20,0.9); border-top: 1px solid rgba(255,255,255,0.06); }
+        .footer-main { padding: 80px 0 60px; }
+        .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1.5fr; gap: 48px; }
+        .footer-logo { display: flex; align-items: center; gap: 10px; font-family: 'Cinzel', serif; font-size: 18px; font-weight: 700; color: var(--accent); margin-bottom: 16px; }
+        .footer-description { color: rgba(248,250,252,0.45); font-size: 14px; line-height: 1.7; margin-bottom: 24px; }
+        .social-links { display: flex; gap: 12px; }
+        .social-link {
+            width: 38px; height: 38px;
+            background: rgba(255,255,255,0.06);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: rgba(248,250,252,0.6);
+            font-size: 14px;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        .social-link:hover { background: var(--accent); color: #fff; transform: translateY(-3px); }
+        .footer-col h4 { font-family: 'Cinzel', serif; font-size: 14px; letter-spacing: 1px; color: var(--accent); margin-bottom: 20px; }
+        .footer-links { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+        .footer-links a { color: rgba(248,250,252,0.45); font-size: 14px; text-decoration: none; transition: color 0.2s; }
+        .footer-links a:hover { color: var(--light); }
+        .footer-contact { list-style: none; display: flex; flex-direction: column; gap: 14px; }
+        .footer-contact li { display: flex; gap: 12px; color: rgba(248,250,252,0.45); font-size: 14px; line-height: 1.6; }
+        .footer-contact i { color: var(--accent); margin-top: 3px; flex-shrink: 0; }
+        .footer-contact a { color: rgba(248,250,252,0.45); text-decoration: none; }
+        .footer-bottom { border-top: 1px solid rgba(255,255,255,0.06); padding: 20px 0; }
+        .footer-bottom-content { display: flex; justify-content: space-between; align-items: center; }
+        .footer-bottom-content p { color: rgba(248,250,252,0.3); font-size: 13px; }
+        .footer-bottom-links { display: flex; gap: 20px; }
+        .footer-bottom-links a { color: rgba(248,250,252,0.3); font-size: 13px; text-decoration: none; transition: color 0.2s; }
+        .footer-bottom-links a:hover { color: var(--accent); }
+
+        /* ===== ANIMATIONS ===== */
+        @keyframes fadeInUp { from { opacity:0; transform:translateY(30px); } to { opacity:1; transform:translateY(0); } }
+        .reveal { opacity: 0; transform: translateY(40px); transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1024px) {
+            .highlights-grid { grid-template-columns: repeat(2,1fr); }
+            .footer-grid { grid-template-columns: 1fr 1fr; }
+        }
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .section-grid, .message-grid { grid-template-columns: 1fr; }
+            .testimonials-grid, .quick-links-grid { grid-template-columns: 1fr; }
+            .highlights-grid { grid-template-columns: 1fr; }
+            .footer-grid { grid-template-columns: 1fr; }
+            .hero-stats { gap: 24px; }
+            .message-card { padding: 32px 24px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- White BG Overlay (for light mode) -->
+    <div class="white-bg-overlay"></div>
+
+    <!-- 3D Background Canvas (academics style) -->
+    <canvas id="bg-canvas"></canvas>
+
+    <!-- Theme Toggle -->
+    <button id="theme-toggle" title="Switch Theme">
+        <i class="fas fa-sun" id="theme-icon"></i>
+        <span id="theme-label">Light Mode</span>
+    </button>
+
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="container">
+            <div class="nav-wrapper">
+                <div class="logo">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>Bright Future Academy</span>
+                </div>
+                <div class="nav-links" id="navLinks">
+                    <a href="index.html" class="active">Home</a>
+                    <a href="about.html">About Us</a>
+                    <a href="admissions.html">Admissions</a>
+                    <a href="academics.html">Academics</a>
+                    <a href="gallery.html">Gallery</a>
+                    <a href="contact.html">Contact</a>
+                    <a href="transport.html"><i class="fas fa-bus"></i> Transport</a>
+                    <div class="portal-dropdown">
+                        <a href="#" class="dropdown-toggle">Portals <i class="fas fa-chevron-down"></i></a>
+                        <div class="dropdown-menu">
+                            <a href="student-login.html"><i class="fas fa-user-graduate"></i> Student Portal</a>
+                            <a href="teacher-login.html"><i class="fas fa-chalkboard-teacher"></i> Teacher Portal</a>
+                            
+                            <a href="admin-login.html"><i class="fas fa-user-shield"></i> Admin Portal</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-badge">Excellence Since 1995</div>
+                <h1 class="hero-title">
+                    <span class="title-line">Shaping</span>
+                    <span class="title-line gradient-text">Tomorrow's Leaders</span>
+                    <span class="title-line">Today</span>
+                </h1>
+                <p class="hero-subtitle">Where education meets innovation, and every child's potential is nurtured to excellence</p>
+                <div class="hero-buttons">
+                    <a href="admissions.html" class="btn btn-primary">
+                        <span>Admissions Open 2024-25</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
+                    <a href="#virtual-tour" class="btn btn-secondary">
+                        <i class="fas fa-play-circle"></i>
+                        <span>Virtual Tour</span>
+                    </a>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <div class="stat-number" data-target="28">0+</div>
+                        <div class="stat-label">Years of Excellence</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" data-target="2500">0+</div>
+                        <div class="stat-label">Happy Students</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" data-target="100">0+</div>
+                        <div class="stat-label">Expert Faculty</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" data-target="98">0%</div>
+                        <div class="stat-label">Board Results</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="hero-scroll">
+            <span>Scroll to explore</span>
+            <div class="scroll-indicator"></div>
+        </div>
+    </section>
+
+    <!-- About Intro -->
+    <section class="about-intro">
+        <div class="container">
+            <div class="section-grid reveal">
+                <div class="intro-content">
+                    <div class="section-tag">Welcome to BFA</div>
+                    <h2 class="section-title">Nurturing Minds, Building Futures</h2>
+                    <p class="section-description">At Bright Future Academy, we believe every child is unique and possesses unlimited potential. Our mission is to provide a holistic education that goes beyond textbooks, fostering critical thinking, creativity, and character development.</p>
+                    <p class="section-description" style="margin-top:12px;">With state-of-the-art infrastructure, experienced faculty, and a student-centric approach, we prepare our students not just for exams, but for life.</p>
+                    <div class="intro-features">
+                        <div class="feature-point"><i class="fas fa-check-circle"></i><span>CBSE Affiliated (Affiliation No: 2130XXX)</span></div>
+                        <div class="feature-point"><i class="fas fa-check-circle"></i><span>ISO 9001:2015 Certified</span></div>
+                        <div class="feature-point"><i class="fas fa-check-circle"></i><span>Award-Winning Institution</span></div>
+                    </div>
+                    <a href="about.html" class="btn btn-outline"><span>Learn More About Us</span><i class="fas fa-arrow-right"></i></a>
+                </div>
+                <div class="intro-image">
+                    <div class="image-wrapper">
+                        <div class="image-decoration"></div>
+                        <img src="https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?w=800&h=600&fit=crop" alt="Students learning">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Principal's Message -->
+    <section class="principal-message">
+        <div class="container">
+            <div class="message-card reveal">
+                <div class="message-grid">
+                    <div class="principal-image">
+                        <div class="image-frame">
+                            <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&h=500&fit=crop" alt="Principal">
+                            <div class="frame-decoration"></div>
+                        </div>
+                        <div class="principal-info">
+                            <h4>Dr. Rajesh Kumar</h4>
+                            <p>Principal</p>
+                            <div class="credentials">M.A., M.Ed., Ph.D.</div>
+                        </div>
+                    </div>
+                    <div class="message-content">
+                        <div class="quote-icon"><i class="fas fa-quote-left"></i></div>
+                        <h3>A Message from the Principal</h3>
+                        <p>Dear Parents and Students,</p>
+                        <p>It gives me immense pleasure to welcome you to Bright Future Academy, where we don't just educate minds but nurture souls. In today's rapidly evolving world, education must prepare students not only with knowledge but with the skills to think critically, adapt swiftly, and lead compassionately.</p>
+                        <p>Our dedicated faculty works tirelessly to create an environment where every student feels valued, challenged, and inspired. We blend traditional values with modern pedagogy, ensuring our students are rooted in culture while being globally competitive.</p>
+                        <p>I invite you to be part of our journey in shaping responsible, innovative, and successful citizens of tomorrow.</p>
+                        <div class="signature">
+                            <div class="signature-line">Dr. Rajesh Kumar</div>
+                            <div class="signature-title">Principal, Bright Future Academy</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Highlights -->
+    <section class="highlights">
+        <div class="container">
+            <div class="section-header centered reveal">
+                <div class="section-tag">Why Choose Us</div>
+                <h2 class="section-title">World-Class Facilities</h2>
+                <p class="section-subtitle">State-of-the-art infrastructure designed to nurture holistic development</p>
+            </div>
+            <div class="highlights-grid">
+                <div class="highlight-card reveal" style="transition-delay:0.1s">
+                    <div class="highlight-icon"><i class="fas fa-laptop-code"></i></div>
+                    <h3>Smart Classrooms</h3>
+                    <p>Interactive digital boards, multimedia learning tools, and technology-enabled education for enhanced understanding.</p>
+                    <div class="highlight-features">
+                        <span><i class="fas fa-check"></i> Digital Boards</span>
+                        <span><i class="fas fa-check"></i> Interactive Learning</span>
+                        <span><i class="fas fa-check"></i> Audio-Visual Aids</span>
+                    </div>
+                </div>
+                <div class="highlight-card reveal" style="transition-delay:0.2s">
+                    <div class="highlight-icon"><i class="fas fa-chalkboard-teacher"></i></div>
+                    <h3>Experienced Teachers</h3>
+                    <p>Highly qualified and dedicated faculty with proven expertise in their subjects and modern teaching methodologies.</p>
+                    <div class="highlight-features">
+                        <span><i class="fas fa-check"></i> 100+ Expert Faculty</span>
+                        <span><i class="fas fa-check"></i> Regular Training</span>
+                        <span><i class="fas fa-check"></i> Student-Centric</span>
+                    </div>
+                </div>
+                <div class="highlight-card reveal" style="transition-delay:0.3s">
+                    <div class="highlight-icon"><i class="fas fa-running"></i></div>
+                    <h3>Sports Facilities</h3>
+                    <p>Comprehensive sports infrastructure including cricket, football, basketball, tennis, and indoor games facilities.</p>
+                    <div class="highlight-features">
+                        <span><i class="fas fa-check"></i> Multiple Grounds</span>
+                        <span><i class="fas fa-check"></i> Trained Coaches</span>
+                        <span><i class="fas fa-check"></i> Indoor Stadium</span>
+                    </div>
+                </div>
+                <div class="highlight-card reveal" style="transition-delay:0.4s">
+                    <div class="highlight-icon"><i class="fas fa-desktop"></i></div>
+                    <h3>Computer Labs</h3>
+                    <p>Advanced computer labs with latest software, high-speed internet, and coding & robotics programs for future-ready skills.</p>
+                    <div class="highlight-features">
+                        <span><i class="fas fa-check"></i> Latest Systems</span>
+                        <span><i class="fas fa-check"></i> Coding Classes</span>
+                        <span><i class="fas fa-check"></i> Robotics Lab</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="testimonials">
+        <div class="container">
+            <div class="section-header centered reveal">
+                <div class="section-tag">Testimonials</div>
+                <h2 class="section-title">What Our Community Says</h2>
+                <p class="section-subtitle">Real experiences from parents and students</p>
+            </div>
+            <div class="testimonials-grid">
+                <div class="testimonial-card reveal" style="transition-delay:0.1s">
+                    <div class="testimonial-rating">★★★★★</div>
+                    <p class="testimonial-text">"Bright Future Academy has been instrumental in my daughter's overall development. The teachers are caring and dedicated, and the school's focus on both academics and extracurricular activities is commendable."</p>
+                    <div class="testimonial-author">
+                        <div class="author-image"><img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop" alt="Parent"></div>
+                        <div class="author-info"><h4>Mrs. Priya Sharma</h4><p>Parent of Class 8 Student</p></div>
+                    </div>
+                </div>
+                <div class="testimonial-card reveal" style="transition-delay:0.2s">
+                    <div class="testimonial-rating">★★★★★</div>
+                    <p class="testimonial-text">"The smart classrooms and modern teaching methods have made learning so interesting. The teachers encourage us to think beyond textbooks and develop our own ideas."</p>
+                    <div class="testimonial-author">
+                        <div class="author-image"><img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop" alt="Student"></div>
+                        <div class="author-info"><h4>Arjun Mehta</h4><p>Class 11 Science Student</p></div>
+                    </div>
+                </div>
+                <div class="testimonial-card reveal" style="transition-delay:0.3s">
+                    <div class="testimonial-rating">★★★★★</div>
+                    <p class="testimonial-text">"We chose BFA for its excellent track record and holistic approach to education. Our son has not only excelled academically but also discovered his passion for robotics here."</p>
+                    <div class="testimonial-author">
+                        <div class="author-image"><img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop" alt="Parent"></div>
+                        <div class="author-info"><h4>Mr. Vikram Singh</h4><p>Parent of Class 10 Student</p></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quick Links -->
+    <section class="quick-links">
+        <div class="container">
+            <div class="quick-links-grid">
+                <div class="quick-link-card reveal" style="transition-delay:0.1s">
+                    <div class="quick-link-icon"><i class="fas fa-file-alt"></i></div>
+                    <h3>Apply Now</h3>
+                    <p>Start your child's journey with us</p>
+                    <a href="admissions.html" class="link-arrow"><span>Apply Online</span><i class="fas fa-arrow-right"></i></a>
+                </div>
+                <div class="quick-link-card reveal" style="transition-delay:0.2s">
+                    <div class="quick-link-icon"><i class="fas fa-calendar-alt"></i></div>
+                    <h3>Events Calendar</h3>
+                    <p>Upcoming events and activities</p>
+                    <a href="#" class="link-arrow"><span>View Calendar</span><i class="fas fa-arrow-right"></i></a>
+                </div>
+                <div class="quick-link-card reveal" style="transition-delay:0.3s">
+                    <div class="quick-link-icon"><i class="fas fa-download"></i></div>
+                    <h3>Downloads</h3>
+                    <p>Forms, circulars, and documents</p>
+                    <a href="#" class="link-arrow"><span>Download Center</span><i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-main">
+            <div class="container">
+                <div class="footer-grid">
+                    <div class="footer-col">
+                        <div class="footer-logo"><i class="fas fa-graduation-cap"></i><span>Bright Future Academy</span></div>
+                        <p class="footer-description">Empowering young minds with quality education and holistic development since 1995.</p>
+                        <div class="social-links">
+                            <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                            <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                            <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                            <a href="#" class="social-link"><i class="fab fa-youtube"></i></a>
+                            <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+                        </div>
+                    </div>
+                    <div class="footer-col">
+                        <h4>Quick Links</h4>
+                        <ul class="footer-links">
+                            <li><a href="about.html">About Us</a></li>
+                            <li><a href="admissions.html">Admissions</a></li>
+                            <li><a href="academics.html">Academics</a></li>
+                            <li><a href="gallery.html">Gallery</a></li>
+                            <li><a href="#">Careers</a></li>
+                            <li><a href="#">Downloads</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-col">
+                        <h4>Portals</h4>
+                        <ul class="footer-links">
+                            <li><a href="student-login.html">Student Login</a></li>
+                            <li><a href="teacher-login.html">Teacher Login</a></li>
+                            <li><a href="admin-login.html">Admin Login</a></li>
+                            <li><a href="#">Parent Portal</a></li>
+                            <li><a href="#">Alumni Portal</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-col">
+                        <h4>Contact Us</h4>
+                        <ul class="footer-contact">
+                            <li><i class="fas fa-map-marker-alt"></i><span>Sector 15, Rohini<br>New Delhi - 110085</span></li>
+                            <li><i class="fas fa-phone"></i><span>+91 11 2345 6789<br>+91 98765 43210</span></li>
+                            <li><i class="fas fa-envelope"></i><span>info@brightfuture.edu.in</span></li>
+                            <li><i class="fas fa-clock"></i><span>Mon - Sat: 8:00 AM - 4:00 PM</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="container">
+                <div class="footer-bottom-content">
+                    <p>&copy; 2024 Bright Future Academy. All Rights Reserved.</p>
+                    <div class="footer-bottom-links">
+                        <a href="#">Privacy Policy</a>
+                        <a href="#">Terms &amp; Conditions</a>
+                        <a href="#">Sitemap</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+    // ============ ACADEMICS-STYLE 3D CANVAS BACKGROUND ============
+    const canvas = document.getElementById('bg-canvas');
+    const ctx = canvas.getContext('2d');
+    let W, H, particles, shapes, mouse = { x: 0, y: 0 };
+    const NUM_PARTICLES = 90;
+    const CONNECT_DIST = 160;
+
+    function resize() {
+        W = canvas.width = window.innerWidth;
+        H = canvas.height = window.innerHeight;
+    }
+
+    class Particle {
+        constructor() { this.reset(true); }
+        reset(init = false) {
+            this.x = Math.random() * W;
+            this.y = init ? Math.random() * H : H + 10;
+            this.z = 0.3 + Math.random() * 0.7;
+            this.vx = (Math.random() - 0.5) * 0.4 * this.z;
+            this.vy = -(0.2 + Math.random() * 0.5) * this.z;
+            this.r = 1.5 + this.z * 2.5;
+            this.alpha = 0.4 + this.z * 0.5;
+            const colors = ['#f59e0b', '#f97316', '#3b82f6', '#a0c4ff', '#ffffff'];
+            this.color = colors[Math.floor(Math.random() * colors.length)];
+            this.life = 0;
+            this.maxLife = 300 + Math.random() * 500;
+        }
+        update() {
+            this.x += this.vx;
+            this.y += this.vy;
+            const dx = this.x - mouse.x, dy = this.y - mouse.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < 150) {
+                const force = (150 - dist) / 150 * 0.05;
+                this.vx += dx / dist * force;
+                this.vy += dy / dist * force;
+            }
+            this.vx *= 0.99; this.vy *= 0.99; this.life++;
+            if (this.y < -20 || this.life > this.maxLife || this.x < -50 || this.x > W + 50) this.reset();
+        }
+        draw() {
+            ctx.save();
+            ctx.globalAlpha = this.alpha;
+            ctx.fillStyle = this.color;
+            ctx.shadowBlur = 8 * this.z;
+            ctx.shadowColor = this.color;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+        }
+    }
+
+    class FloatShape {
+        constructor() { this.init(); }
+        init() {
+            this.x = Math.random() * W; this.y = Math.random() * H;
+            this.size = 20 + Math.random() * 50;
+            this.rot = Math.random() * Math.PI * 2;
+            this.rotSpeed = (Math.random() - 0.5) * 0.008;
+            this.vx = (Math.random() - 0.5) * 0.3;
+            this.vy = (Math.random() - 0.5) * 0.2;
+            this.alpha = 0.04 + Math.random() * 0.08;
+            this.type = Math.floor(Math.random() * 3);
+        }
+        update() {
+            this.x += this.vx; this.y += this.vy; this.rot += this.rotSpeed;
+            if (this.x < -100) this.x = W + 100;
+            if (this.x > W + 100) this.x = -100;
+            if (this.y < -100) this.y = H + 100;
+            if (this.y > H + 100) this.y = -100;
+        }
+        draw() {
+            ctx.save();
+            ctx.translate(this.x, this.y); ctx.rotate(this.rot);
+            ctx.globalAlpha = this.alpha; ctx.strokeStyle = '#3b82f6'; ctx.lineWidth = 1;
+            const s = this.size;
+            if (this.type === 0) {
+                ctx.strokeRect(-s / 2, -s / 2, s, s);
+                ctx.rotate(Math.PI / 4);
+                ctx.strokeRect(-s / 3, -s / 3, s * 0.67, s * 0.67);
+            } else if (this.type === 1) {
+                ctx.beginPath(); ctx.moveTo(0, -s / 2); ctx.lineTo(s / 2, s / 2); ctx.lineTo(-s / 2, s / 2); ctx.closePath(); ctx.stroke();
+            } else {
+                ctx.beginPath(); ctx.moveTo(0, -s / 2); ctx.lineTo(s / 2, 0); ctx.lineTo(0, s / 2); ctx.lineTo(-s / 2, 0); ctx.closePath(); ctx.stroke();
+            }
+            ctx.restore();
+        }
+    }
+
+    function init() {
+        resize();
+        particles = Array.from({ length: NUM_PARTICLES }, () => new Particle());
+        shapes = Array.from({ length: 14 }, () => new FloatShape());
+    }
+
+    function drawBackground() {
+        const grad = ctx.createLinearGradient(0, 0, W, H);
+        grad.addColorStop(0, '#040d1e');
+        grad.addColorStop(0.4, '#061430');
+        grad.addColorStop(0.7, '#0a1a40');
+        grad.addColorStop(1, '#050c22');
+        ctx.fillStyle = grad; ctx.fillRect(0, 0, W, H);
+        const rg = ctx.createRadialGradient(W * 0.5, 0, 0, W * 0.5, 0, H * 0.7);
+        rg.addColorStop(0, 'rgba(59,130,246,0.12)');
+        rg.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = rg; ctx.fillRect(0, 0, W, H);
+    }
+
+    function drawConnections() {
+        for (let i = 0; i < particles.length; i++) {
+            for (let j = i + 1; j < particles.length; j++) {
+                const dx = particles[i].x - particles[j].x;
+                const dy = particles[i].y - particles[j].y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < CONNECT_DIST) {
+                    ctx.save();
+                    ctx.globalAlpha = (1 - dist / CONNECT_DIST) * 0.25;
+                    ctx.strokeStyle = '#3b82f6'; ctx.lineWidth = 0.6;
+                    ctx.beginPath();
+                    ctx.moveTo(particles[i].x, particles[i].y);
+                    ctx.lineTo(particles[j].x, particles[j].y);
+                    ctx.stroke();
+                    ctx.restore();
+                }
+            }
+        }
+    }
+
+    function animate() {
+        drawBackground();
+        shapes.forEach(s => { s.update(); s.draw(); });
+        drawConnections();
+        particles.forEach(p => { p.update(); p.draw(); });
+        requestAnimationFrame(animate);
+    }
+
+    window.addEventListener('resize', resize);
+    window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+    init();
+    animate();
+
+    // ===== NAVBAR SCROLL =====
+    window.addEventListener('scroll', () => {
+        document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 60);
+    });
+
+    // ===== SCROLL REVEAL =====
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.12 });
+    reveals.forEach(r => observer.observe(r));
+
+    // ===== COUNTER ANIMATION =====
+    function animateCounter(el, target, suffix) {
+        let start = 0, duration = 2000, startTime = null;
+        function step(ts) {
+            if (!startTime) startTime = ts;
+            const progress = Math.min((ts - startTime) / duration, 1);
+            const val = Math.floor(progress * target);
+            el.textContent = val + suffix;
+            if (progress < 1) requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+    }
+    const counterObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const el = entry.target;
+                const target = parseInt(el.dataset.target);
+                const suffix = el.textContent.includes('%') ? '%' : '+';
+                animateCounter(el, target, suffix);
+                counterObserver.unobserve(el);
+            }
+        });
+    }, { threshold: 0.5 });
+    document.querySelectorAll('.stat-number[data-target]').forEach(el => counterObserver.observe(el));
+
+    // ===== THEME TOGGLE =====
+    const toggleBtn = document.getElementById('theme-toggle');
+    const themeIcon = document.getElementById('theme-icon');
+    const themeLabel = document.getElementById('theme-label');
+    let isLight = false;
+
+    toggleBtn.addEventListener('click', () => {
+        isLight = !isLight;
+        document.body.classList.toggle('light-theme', isLight);
+        themeIcon.className = isLight ? 'fas fa-moon' : 'fas fa-sun';
+        themeLabel.textContent = isLight ? 'Dark Mode' : 'Light Mode';
+    });
+    </script>
+</body>
+</html>

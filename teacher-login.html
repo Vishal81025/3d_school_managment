@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Login - Bright Future Academy</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #0a1628;
+            --accent: #f59e0b;
+            --accent2: #3b82f6;
+            --accent3: #10b981;
+            --purple: #8b5cf6;
+            --danger: #ef4444;
+        }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--primary);
+            color: #f8fafc;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ── Canvas Background ── */
+        #bg-canvas {
+            position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 0; pointer-events: none;
+        }
+
+        /* ── Layout ── */
+        .page-wrap {
+            position: relative; z-index: 1;
+            min-height: 100vh;
+            display: flex; align-items: center; justify-content: center;
+            padding: 40px 20px;
+        }
+
+        /* ── Card ── */
+        .login-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(139,92,246,0.25);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 48px 44px;
+            width: 100%; max-width: 460px;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.4), 0 0 0 1px rgba(139,92,246,0.1);
+            animation: slideUp 0.6s cubic-bezier(0.16,1,0.3,1) both;
+        }
+        @keyframes slideUp { from { opacity:0; transform:translateY(30px); } to { opacity:1; transform:translateY(0); } }
+
+        /* ── Header ── */
+        .card-header { text-align: center; margin-bottom: 36px; }
+        .school-logo {
+            display: inline-flex; align-items: center; gap: 10px;
+            font-family: 'Cinzel', serif; font-size: 15px; font-weight: 700;
+            color: var(--accent); margin-bottom: 28px;
+            text-decoration: none;
+        }
+        .school-logo i { font-size: 22px; }
+
+        .avatar-ring {
+            width: 80px; height: 80px; border-radius: 50%;
+            background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 32px; color: #fff;
+            margin: 0 auto 20px;
+            box-shadow: 0 0 0 4px rgba(139,92,246,0.2), 0 0 30px rgba(139,92,246,0.3);
+        }
+        .card-header h1 {
+            font-family: 'Cinzel', serif; font-size: 26px; font-weight: 900;
+            margin-bottom: 6px;
+        }
+        .card-header p { font-size: 14px; color: rgba(248,250,252,0.5); }
+
+        /* ── Form ── */
+        .form-group { margin-bottom: 20px; }
+        .form-group label {
+            display: block; font-size: 12px; font-weight: 700;
+            color: rgba(248,250,252,0.6); text-transform: uppercase;
+            letter-spacing: 0.5px; margin-bottom: 8px;
+        }
+        .input-wrap { position: relative; }
+        .input-wrap i {
+            position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+            color: rgba(248,250,252,0.35); font-size: 15px; pointer-events: none;
+        }
+        .input-wrap input {
+            width: 100%; padding: 13px 14px 13px 42px;
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 12px;
+            font-family: 'Outfit', sans-serif; font-size: 14px;
+            color: #f8fafc; transition: all 0.2s;
+        }
+        .input-wrap input::placeholder { color: rgba(248,250,252,0.3); }
+        .input-wrap input:focus {
+            outline: none;
+            border-color: var(--purple);
+            background: rgba(139,92,246,0.08);
+            box-shadow: 0 0 0 3px rgba(139,92,246,0.12);
+        }
+        .toggle-password {
+            position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+            color: rgba(248,250,252,0.35); cursor: pointer; font-size: 15px;
+            background: none; border: none; transition: color 0.2s;
+        }
+        .toggle-password:hover { color: var(--purple); }
+
+        /* ── Options Row ── */
+        .form-options {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 24px;
+        }
+        .remember-me { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; color: rgba(248,250,252,0.6); }
+        .remember-me input[type="checkbox"] { accent-color: var(--purple); width: 15px; height: 15px; cursor: pointer; }
+        .forgot-link { font-size: 13px; color: var(--purple); text-decoration: none; transition: color 0.2s; }
+        .forgot-link:hover { color: #a78bfa; }
+
+        /* ── Error Message ── */
+        .error-msg {
+            background: rgba(239,68,68,0.12);
+            border: 1px solid rgba(239,68,68,0.3);
+            border-radius: 10px; padding: 12px 16px;
+            font-size: 13px; color: #fca5a5;
+            margin-bottom: 20px; display: none;
+            align-items: center; gap: 8px;
+        }
+        .error-msg.show { display: flex; }
+
+        /* ── Submit Button ── */
+        .btn-login {
+            width: 100%; padding: 14px;
+            background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+            border: none; border-radius: 12px;
+            font-family: 'Outfit', sans-serif; font-size: 15px; font-weight: 700;
+            color: #fff; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            box-shadow: 0 8px 30px rgba(139,92,246,0.35);
+            transition: all 0.3s; margin-bottom: 20px;
+        }
+        .btn-login:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(139,92,246,0.5); }
+        .btn-login:active { transform: translateY(0); }
+        .btn-login.loading { opacity: 0.8; pointer-events: none; }
+        .spinner { display: none; width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; }
+        .btn-login.loading .spinner { display: block; }
+        .btn-login.loading .btn-text { display: none; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ── Divider ── */
+        .divider { display: flex; align-items: center; gap: 12px; margin: 4px 0 20px; }
+        .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.1); }
+        .divider span { font-size: 12px; color: rgba(248,250,252,0.3); white-space: nowrap; }
+
+        /* ── Footer ── */
+        .card-footer { text-align: center; margin-top: 8px; }
+        .card-footer p { font-size: 13px; color: rgba(248,250,252,0.4); margin-bottom: 8px; }
+        .card-footer a { color: var(--purple); text-decoration: none; font-weight: 600; transition: color 0.2s; }
+        .card-footer a:hover { color: #a78bfa; }
+
+        .back-link {
+            display: inline-flex; align-items: center; gap: 6px;
+            font-size: 12px; color: rgba(248,250,252,0.3);
+            text-decoration: none; margin-top: 16px;
+            transition: color 0.2s;
+        }
+        .back-link:hover { color: rgba(248,250,252,0.6); }
+
+        /* ── Demo credentials box ── */
+        .demo-box {
+            background: rgba(139,92,246,0.08);
+            border: 1px solid rgba(139,92,246,0.2);
+            border-radius: 10px; padding: 12px 16px;
+            margin-bottom: 24px; font-size: 12px;
+            color: rgba(248,250,252,0.5);
+        }
+        .demo-box strong { color: var(--purple); display: block; margin-bottom: 4px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .demo-row { display: flex; justify-content: space-between; margin-top: 4px; }
+        .demo-val { color: rgba(248,250,252,0.75); font-weight: 600; }
+
+        /* ── Success overlay ── */
+        .success-overlay {
+            position: fixed; inset: 0; z-index: 9999;
+            background: rgba(0,0,0,0.85);
+            display: none; align-items: center; justify-content: center;
+            flex-direction: column; gap: 16px;
+        }
+        .success-overlay.show { display: flex; }
+        .success-check {
+            width: 80px; height: 80px; border-radius: 50%;
+            background: linear-gradient(135deg, #8b5cf6, #10b981);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 36px; color: #fff;
+            animation: popIn 0.5s cubic-bezier(0.16,1,0.3,1) both;
+        }
+        @keyframes popIn { from { transform:scale(0); opacity:0; } to { transform:scale(1); opacity:1; } }
+        .success-overlay h3 { font-family: 'Cinzel', serif; font-size: 22px; color: #f8fafc; }
+        .success-overlay p { font-size: 14px; color: rgba(248,250,252,0.5); }
+    </style>
+</head>
+<body>
+
+<!-- Canvas BG -->
+<canvas id="bg-canvas"></canvas>
+
+<!-- Success Overlay -->
+<div class="success-overlay" id="successOverlay">
+    <div class="success-check"><i class="fas fa-check"></i></div>
+    <h3>Login Successful!</h3>
+    <p>Redirecting to your dashboard...</p>
+</div>
+
+<div class="page-wrap">
+    <div class="login-card">
+
+        <!-- Header -->
+        <div class="card-header">
+            <a href="index.html" class="school-logo">
+                <i class="fas fa-graduation-cap"></i>
+                <span>Bright Future Academy</span>
+            </a>
+            <div class="avatar-ring">
+                <i class="fas fa-chalkboard-teacher"></i>
+            </div>
+            <h1>Teacher Login</h1>
+            <p>Sign in to access your teaching portal</p>
+        </div>
+
+        <!-- Demo Credentials -->
+        <div class="demo-box">
+            <strong>🔑 Demo Credentials</strong>
+            <div class="demo-row"><span>Email:</span><span class="demo-val">teacher@brightfuture.edu.in</span></div>
+            <div class="demo-row"><span>Password:</span><span class="demo-val">teacher123</span></div>
+        </div>
+
+        <!-- Error Message -->
+        <div class="error-msg" id="errorMsg">
+            <i class="fas fa-exclamation-circle"></i>
+            <span id="errorText">Invalid email or password. Please try again.</span>
+        </div>
+
+        <!-- Form -->
+        <form id="loginForm" onsubmit="handleLogin(event)">
+
+            <div class="form-group">
+                <label>Email Address</label>
+                <div class="input-wrap">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" id="email" placeholder="your.email@brightfuture.edu.in" autocomplete="email" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Password</label>
+                <div class="input-wrap">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="password" placeholder="Enter your password" autocomplete="current-password" required>
+                    <button type="button" class="toggle-password" onclick="togglePwd()" id="toggleBtn">
+                        <i class="fas fa-eye" id="eyeIcon"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="form-options">
+                <label class="remember-me">
+                    <input type="checkbox" id="rememberMe"> Remember me
+                </label>
+                <a href="#" class="forgot-link">Forgot Password?</a>
+            </div>
+
+            <button type="submit" class="btn-login" id="loginBtn">
+                <span class="btn-text"><i class="fas fa-sign-in-alt"></i> Sign In to Portal</span>
+                <div class="spinner"></div>
+            </button>
+        </form>
+
+        <div class="divider"><span>New teacher?</span></div>
+
+        <div class="card-footer">
+            <p>Don't have an account? <a href="teacher-signup.html">Register here</a></p>
+            <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to School Website</a>
+        </div>
+
+    </div>
+</div>
+
+<script>
+/* ═══════════════ CANVAS BACKGROUND ═══════════════ */
+const canvas = document.getElementById('bg-canvas');
+const ctx = canvas.getContext('2d');
+let W, H, particles, shapes, mouse = {x:0,y:0};
+
+function resize(){ W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+
+class Particle {
+    constructor(){ this.reset(true); }
+    reset(init=false){
+        this.x = Math.random()*W;
+        this.y = init ? Math.random()*H : H+10;
+        this.z = 0.3+Math.random()*0.7;
+        this.vx = (Math.random()-0.5)*0.4*this.z;
+        this.vy = -(0.2+Math.random()*0.5)*this.z;
+        this.r = 1.5+this.z*2.5;
+        this.alpha = 0.4+this.z*0.5;
+        const colors=['#8b5cf6','#3b82f6','#a78bfa','#60a5fa','#ffffff'];
+        this.color = colors[Math.floor(Math.random()*colors.length)];
+        this.life=0; this.maxLife=300+Math.random()*500;
+    }
+    update(){
+        this.x+=this.vx; this.y+=this.vy;
+        const dx=this.x-mouse.x, dy=this.y-mouse.y;
+        const dist=Math.sqrt(dx*dx+dy*dy);
+        if(dist<150){ const f=(150-dist)/150*0.05; this.vx+=dx/dist*f; this.vy+=dy/dist*f; }
+        this.vx*=0.99; this.vy*=0.99; this.life++;
+        if(this.y<-20||this.life>this.maxLife||this.x<-50||this.x>W+50) this.reset();
+    }
+    draw(){
+        ctx.save(); ctx.globalAlpha=this.alpha; ctx.fillStyle=this.color;
+        ctx.shadowBlur=8*this.z; ctx.shadowColor=this.color;
+        ctx.beginPath(); ctx.arc(this.x,this.y,this.r,0,Math.PI*2); ctx.fill(); ctx.restore();
+    }
+}
+
+class FloatShape {
+    constructor(){ this.init(); }
+    init(){
+        this.x=Math.random()*W; this.y=Math.random()*H;
+        this.size=20+Math.random()*50;
+        this.rot=Math.random()*Math.PI*2;
+        this.rotSpeed=(Math.random()-0.5)*0.008;
+        this.vx=(Math.random()-0.5)*0.3;
+        this.vy=(Math.random()-0.5)*0.2;
+        this.alpha=0.04+Math.random()*0.08;
+        this.type=Math.floor(Math.random()*3);
+    }
+    update(){
+        this.x+=this.vx; this.y+=this.vy; this.rot+=this.rotSpeed;
+        if(this.x<-100)this.x=W+100; if(this.x>W+100)this.x=-100;
+        if(this.y<-100)this.y=H+100; if(this.y>H+100)this.y=-100;
+    }
+    draw(){
+        ctx.save(); ctx.translate(this.x,this.y); ctx.rotate(this.rot);
+        ctx.globalAlpha=this.alpha; ctx.strokeStyle='#8b5cf6'; ctx.lineWidth=1;
+        const s=this.size;
+        if(this.type===0){ ctx.strokeRect(-s/2,-s/2,s,s); ctx.rotate(Math.PI/4); ctx.strokeRect(-s/3,-s/3,s*0.67,s*0.67); }
+        else if(this.type===1){ ctx.beginPath(); ctx.moveTo(0,-s/2); ctx.lineTo(s/2,s/2); ctx.lineTo(-s/2,s/2); ctx.closePath(); ctx.stroke(); }
+        else { ctx.beginPath(); ctx.moveTo(0,-s/2); ctx.lineTo(s/2,0); ctx.lineTo(0,s/2); ctx.lineTo(-s/2,0); ctx.closePath(); ctx.stroke(); }
+        ctx.restore();
+    }
+}
+
+function init(){
+    resize();
+    particles = Array.from({length:70},()=>new Particle());
+    shapes = Array.from({length:12},()=>new FloatShape());
+}
+
+function drawBg(){
+    const g=ctx.createLinearGradient(0,0,W,H);
+    g.addColorStop(0,'#040d1e'); g.addColorStop(0.4,'#0a0620'); g.addColorStop(0.7,'#08102a'); g.addColorStop(1,'#050c22');
+    ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+    const rg=ctx.createRadialGradient(W*0.5,0,0,W*0.5,0,H*0.7);
+    rg.addColorStop(0,'rgba(139,92,246,0.1)'); rg.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=rg; ctx.fillRect(0,0,W,H);
+}
+
+function drawConnections(){
+    for(let i=0;i<particles.length;i++){
+        for(let j=i+1;j<particles.length;j++){
+            const dx=particles[i].x-particles[j].x, dy=particles[i].y-particles[j].y;
+            const dist=Math.sqrt(dx*dx+dy*dy);
+            if(dist<160){
+                ctx.save(); ctx.globalAlpha=(1-dist/160)*0.2;
+                ctx.strokeStyle='#8b5cf6'; ctx.lineWidth=0.6;
+                ctx.beginPath(); ctx.moveTo(particles[i].x,particles[i].y); ctx.lineTo(particles[j].x,particles[j].y); ctx.stroke(); ctx.restore();
+            }
+        }
+    }
+}
+
+function animate(){
+    drawBg();
+    shapes.forEach(s=>{s.update();s.draw();});
+    drawConnections();
+    particles.forEach(p=>{p.update();p.draw();});
+    requestAnimationFrame(animate);
+}
+
+window.addEventListener('resize',resize);
+window.addEventListener('mousemove',e=>{mouse.x=e.clientX;mouse.y=e.clientY;});
+init(); animate();
+
+/* ═══════════════ PASSWORD TOGGLE ═══════════════ */
+function togglePwd(){
+    const inp = document.getElementById('password');
+    const icon = document.getElementById('eyeIcon');
+    const show = inp.type === 'password';
+    inp.type = show ? 'text' : 'password';
+    icon.className = show ? 'fas fa-eye-slash' : 'fas fa-eye';
+}
+
+/* ═══════════════ LOGIN HANDLER ═══════════════ */
+// Valid teacher credentials — add more as needed or connect to your auth system
+const VALID_CREDENTIALS = [
+    { email: 'teacher@brightfuture.edu.in', password: 'teacher123' },
+    { email: 'sunita.gupta@brightfuture.edu.in', password: 'physics2024' },
+    { email: 'admin@brightfuture.edu.in', password: 'admin123' },
+];
+
+function handleLogin(e) {
+    e.preventDefault();
+
+    const email    = document.getElementById('email').value.trim().toLowerCase();
+    const password = document.getElementById('password').value;
+    const btn      = document.getElementById('loginBtn');
+    const errorMsg = document.getElementById('errorMsg');
+
+    // Hide previous error
+    errorMsg.classList.remove('show');
+
+    // Show loading state
+    btn.classList.add('loading');
+
+    // Simulate network delay (remove this in production and use real auth)
+    setTimeout(() => {
+        const match = VALID_CREDENTIALS.find(
+            c => c.email.toLowerCase() === email && c.password === password
+        );
+
+        if (match) {
+            // ✅ SUCCESS — store session and redirect to teacher-dashboard.html
+            sessionStorage.setItem('teacherLoggedIn', 'true');
+            sessionStorage.setItem('teacherEmail', email);
+
+            // Show success overlay
+            document.getElementById('successOverlay').classList.add('show');
+
+            // Redirect after 1.5 seconds
+            setTimeout(() => {
+                window.location.href = 'teacher-dashboard.html';
+            }, 1500);
+
+        } else {
+            // ❌ FAIL — show error
+            btn.classList.remove('loading');
+            errorMsg.classList.add('show');
+            document.getElementById('errorText').textContent = 'Invalid email or password. Please try again.';
+
+            // Shake the card
+            const card = document.querySelector('.login-card');
+            card.style.animation = 'none';
+            card.style.transform = 'translateX(-8px)';
+            setTimeout(()=>{card.style.transform='translateX(8px)';},80);
+            setTimeout(()=>{card.style.transform='translateX(-4px)';},160);
+            setTimeout(()=>{card.style.transform='translateX(0)';},240);
+        }
+    }, 1200);
+}
+
+// Pre-fill demo credentials if coming from demo hint click
+document.querySelector('.demo-box').addEventListener('click', () => {
+    document.getElementById('email').value = 'teacher@brightfuture.edu.in';
+    document.getElementById('password').value = 'teacher123';
+});
+</script>
+</body>
+</html>

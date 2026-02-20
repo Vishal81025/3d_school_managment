@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Portal Login - Bright Future Academy</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/pages.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="login-page">
+        <div class="login-container">
+            <div class="login-header">
+                <div class="login-icon">
+                    <i class="fas fa-user-shield"></i>
+                </div>
+                <h2>Admin Portal</h2>
+                <p>Secure administrator access</p>
+            </div>
+            <form class="login-form" onsubmit="return handleAdminLogin(event)">
+                <div class="form-group">
+                    <label>Admin Email</label>
+                    <input type="text" name="username" placeholder="Enter admin email" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" name="password" placeholder="Enter your password" required>
+                </div>
+                <div class="forgot-password">
+                    <a href="#">Forgot Password?</a>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <span>Login</span>
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </form>
+            <div style="text-align: center; margin-top: 2rem; padding-top: 2rem; border-top: 2px solid var(--border-color);">
+                <p style="color: var(--text-gray); margin-bottom: 0.8rem; font-size: 0.9rem;">
+                    <strong>Default Admin:</strong><br>
+                    Email: admin@brightfutureacademy.edu.in<br>
+                    Password: admin123
+                </p>
+            </div>
+            <div style="text-align: center; margin-top: 1.5rem;">
+                <p style="color: var(--text-gray); margin-bottom: 1rem; font-size: 0.9rem;">Other Portals</p>
+                <div style="display: flex; gap: 1rem; justify-content: center;">
+                    <a href="student-login.html" style="color: var(--primary-blue); text-decoration: none; font-weight: 500; font-size: 0.9rem;">Student Portal</a>
+                    <span style="color: var(--border-color);">|</span>
+                    <a href="teacher-login.html" style="color: var(--primary-blue); text-decoration: none; font-weight: 500; font-size: 0.9rem;">Teacher Portal</a>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 2rem;">
+                <a href="index.html" style="color: var(--text-gray); text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-home"></i>
+                    <span>Back to Home</span>
+                </a>
+            </div>
+        </div>
+    </div>
+    <script src="js/auth.js"></script>
+</body>
+</html>

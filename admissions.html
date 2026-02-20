@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admissions - Bright Future Academy</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700;800;900&family=Cormorant+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1a3a6e;
+            --accent: #f0a500;
+            --accent2: #e05c2a;
+            --text: #ffffff;
+            --text-dark: #1a1a2e;
+            --card-bg: rgba(255,255,255,0.08);
+            --card-border: rgba(255,255,255,0.15);
+            --shadow: 0 8px 32px rgba(0,0,0,0.3);
+            --nav-bg: rgba(10,20,50,0.85);
+        }
+
+        body.white-mode {
+            --text: #1a1a2e;
+            --card-bg: rgba(255,255,255,0.9);
+            --card-border: rgba(26,58,110,0.15);
+            --shadow: 0 8px 32px rgba(0,0,0,0.1);
+            --nav-bg: rgba(255,255,255,0.92);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Raleway', sans-serif;
+            color: var(--text);
+            min-height: 100vh;
+            transition: color 0.4s ease;
+            overflow-x: hidden;
+        }
+
+        /* ======= 3D CANVAS BACKGROUND ======= */
+        #bg-canvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: -1;
+            transition: opacity 0.6s ease;
+        }
+
+        .white-bg-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(135deg, #f0f4ff 0%, #e8edf8 40%, #f5f0ff 100%);
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.6s ease;
+            pointer-events: none;
+        }
+
+        body.white-mode #bg-canvas { opacity: 0; }
+        body.white-mode .white-bg-overlay { opacity: 1; }
+
+        /* ======= THEME TOGGLE ======= */
+        .theme-toggle {
+            position: fixed;
+            top: 4.8rem;
+            right: 1.5rem;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.25);
+            border-radius: 50px;
+            padding: 0.4rem 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            color: var(--text);
+        }
+        .theme-toggle:hover { transform: scale(1.05); }
+
+        body.white-mode .theme-toggle {
+            background: rgba(26,58,110,0.1);
+            border-color: rgba(26,58,110,0.2);
+        }
+
+        .toggle-knob {
+            width: 36px; height: 20px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 10px;
+            position: relative;
+            transition: background 0.3s;
+        }
+        .toggle-knob::after {
+            content: '';
+            position: absolute;
+            top: 3px; left: 3px;
+            width: 14px; height: 14px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s, background 0.3s;
+        }
+        body.white-mode .toggle-knob { background: var(--primary); }
+        body.white-mode .toggle-knob::after { transform: translateX(16px); background: white; }
+
+        /* ======= NAV ======= */
+        .navbar {
+            position: fixed; top: 0; left: 0; right: 0;
+            z-index: 900;
+            background: var(--nav-bg);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding: 0;
+            transition: background 0.4s ease;
+        }
+        body.white-mode .navbar { border-bottom-color: rgba(26,58,110,0.1); }
+
+        .nav-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 64px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text);
+            text-decoration: none;
+        }
+        .logo i { color: var(--accent); font-size: 1.5rem; }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+        .nav-links a {
+            color: var(--text);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            opacity: 0.8;
+            transition: opacity 0.2s, color 0.2s;
+        }
+        .nav-links a:hover, .nav-links a.active { opacity: 1; color: var(--accent); }
+
+        /* ======= PAGE HEADER ======= */
+        .page-header {
+            min-height: 380px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 8rem 2rem 4rem;
+            position: relative;
+        }
+        .page-header h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(3rem, 7vw, 5.5rem);
+            font-weight: 700;
+            line-height: 1;
+            letter-spacing: -0.02em;
+            color: var(--text);
+        }
+        .page-header h1 span { color: var(--accent); }
+        .page-header p {
+            margin-top: 1rem;
+            font-size: 1.1rem;
+            opacity: 0.7;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            justify-content: center;
+            margin-top: 1.5rem;
+            font-size: 0.85rem;
+            opacity: 0.6;
+        }
+        .breadcrumb a { color: inherit; text-decoration: none; }
+        .breadcrumb a:hover { opacity: 1; color: var(--accent); }
+
+        /* ======= SECTIONS ======= */
+        section { padding: 5rem 0; }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+
+        .section-tag {
+            display: inline-block;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--accent);
+            background: rgba(240,165,0,0.15);
+            border: 1px solid rgba(240,165,0,0.3);
+            padding: 0.3rem 0.9rem;
+            border-radius: 50px;
+            margin-bottom: 1rem;
+        }
+
+        .section-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 700;
+            color: var(--text);
+            line-height: 1.1;
+        }
+        .section-subtitle {
+            margin-top: 0.8rem;
+            opacity: 0.65;
+            font-size: 1rem;
+        }
+        .centered { text-align: center; }
+
+        /* ======= PROCESS STEPS ======= */
+        .process-section { background: transparent; }
+        .process-steps {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-top: 3rem;
+        }
+        .process-step {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            backdrop-filter: blur(16px);
+            border-radius: 20px;
+            padding: 2.5rem 1.5rem;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        .process-step::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent), var(--accent2));
+            transform: scaleX(0);
+            transition: transform 0.3s;
+        }
+        .process-step:hover { transform: translateY(-8px); box-shadow: 0 20px 50px rgba(0,0,0,0.2); }
+        .process-step:hover::before { transform: scaleX(1); }
+
+        .step-number {
+            width: 56px; height: 56px;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.4rem; font-weight: 800;
+            color: white;
+            margin: 0 auto 1.5rem;
+            box-shadow: 0 4px 20px rgba(240,165,0,0.4);
+        }
+        .process-step h4 { font-size: 1rem; font-weight: 700; margin-bottom: 0.6rem; color: var(--text); }
+        .process-step p { font-size: 0.88rem; opacity: 0.7; line-height: 1.5; }
+
+        /* ======= ELIGIBILITY + DOCS ======= */
+        .info-section { background: transparent; }
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: start;
+        }
+
+        .doc-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            backdrop-filter: blur(16px);
+            border-radius: 14px;
+            padding: 1.2rem 1.5rem;
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .doc-card:hover { transform: translateX(6px); box-shadow: var(--shadow); }
+        .doc-card i { color: var(--accent); font-size: 1.4rem; flex-shrink: 0; }
+        .doc-card span { font-size: 0.92rem; color: var(--text); }
+
+        .age-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            backdrop-filter: blur(16px);
+            border-radius: 14px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 0.8rem;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .age-card strong { color: var(--accent); font-weight: 700; }
+
+        /* ======= FORM ======= */
+        .form-section { background: transparent; }
+        .form-container {
+            max-width: 820px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 3rem;
+            box-shadow: var(--shadow);
+        }
+
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
+        .form-group { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 0; }
+        .form-group.full { grid-column: 1 / -1; }
+
+        label {
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.07em;
+            text-transform: uppercase;
+            opacity: 0.8;
+            color: var(--text);
+        }
+        label span { color: #ff6b6b; }
+
+        input, select, textarea {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            padding: 0.85rem 1.1rem;
+            font-family: 'Raleway', sans-serif;
+            font-size: 0.92rem;
+            color: var(--text);
+            transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+            outline: none;
+            width: 100%;
+        }
+        body.white-mode input,
+        body.white-mode select,
+        body.white-mode textarea {
+            background: white;
+            border-color: rgba(26,58,110,0.2);
+        }
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--accent);
+            background: rgba(255,255,255,0.12);
+            box-shadow: 0 0 0 3px rgba(240,165,0,0.15);
+        }
+        select option { background: #1a3a6e; color: white; }
+        body.white-mode select option { background: white; color: #1a1a2e; }
+        textarea { resize: vertical; min-height: 100px; }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            padding: 0.85rem 2rem;
+            border-radius: 10px;
+            font-family: 'Raleway', sans-serif;
+            font-weight: 700;
+            font-size: 0.9rem;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            color: white;
+            box-shadow: 0 4px 20px rgba(240,165,0,0.35);
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(240,165,0,0.5); }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--card-border);
+            color: var(--text);
+        }
+        .btn-outline:hover { background: rgba(255,255,255,0.1); }
+
+        /* ======= FEE TABLE ======= */
+        .fee-section { background: transparent; }
+        .table-wrap {
+            max-width: 900px;
+            margin: 2.5rem auto 0;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            backdrop-filter: blur(16px);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+        table { width: 100%; border-collapse: collapse; }
+        thead tr {
+            background: linear-gradient(135deg, var(--primary), #0d2451);
+        }
+        body.white-mode thead tr { background: linear-gradient(135deg, #1a3a6e, #0d2451); }
+        th {
+            padding: 1.2rem 1.5rem;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.9);
+            text-align: left;
+        }
+        td {
+            padding: 1.1rem 1.5rem;
+            font-size: 0.92rem;
+            color: var(--text);
+            border-bottom: 1px solid var(--card-border);
+        }
+        tbody tr { transition: background 0.2s; }
+        tbody tr:hover { background: rgba(240,165,0,0.08); }
+        tbody tr:last-child td { border-bottom: none; }
+        .fee-note {
+            padding: 1.5rem;
+            background: rgba(240,165,0,0.08);
+            border-top: 1px solid var(--card-border);
+            font-size: 0.85rem;
+            opacity: 0.8;
+            line-height: 1.8;
+        }
+
+        /* ======= FOOTER ======= */
+        footer {
+            background: rgba(10,20,50,0.85);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255,255,255,0.08);
+            padding: 4rem 0 2rem;
+            margin-top: 2rem;
+        }
+        body.white-mode footer {
+            background: rgba(26,58,110,0.95);
+        }
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1.5fr;
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+        .footer-logo {
+            display: flex; align-items: center; gap: 0.7rem;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.2rem; font-weight: 700;
+            color: white; margin-bottom: 1rem;
+        }
+        .footer-logo i { color: var(--accent); }
+        .footer-desc { font-size: 0.88rem; opacity: 0.65; line-height: 1.7; color: white; }
+        .social-links { display: flex; gap: 0.7rem; margin-top: 1.2rem; }
+        .social-link {
+            width: 36px; height: 36px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 0.85rem;
+            text-decoration: none;
+            transition: background 0.2s, transform 0.2s;
+        }
+        .social-link:hover { background: var(--accent); transform: translateY(-3px); }
+        .footer-col h4 { color: white; font-size: 0.85rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 1.2rem; }
+        .footer-links { list-style: none; }
+        .footer-links li { margin-bottom: 0.6rem; }
+        .footer-links a { color: rgba(255,255,255,0.6); text-decoration: none; font-size: 0.88rem; transition: color 0.2s; }
+        .footer-links a:hover { color: var(--accent); }
+        .footer-contact li { display: flex; gap: 0.8rem; color: rgba(255,255,255,0.65); font-size: 0.88rem; margin-bottom: 0.8rem; align-items: flex-start; line-height: 1.5; }
+        .footer-contact i { color: var(--accent); margin-top: 2px; flex-shrink: 0; }
+        .footer-bottom {
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 2rem;
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 0.82rem; color: rgba(255,255,255,0.5);
+        }
+        .footer-bottom a { color: rgba(255,255,255,0.5); text-decoration: none; margin-left: 1.5rem; transition: color 0.2s; }
+        .footer-bottom a:hover { color: var(--accent); }
+
+        @media(max-width:768px) {
+            .process-steps { grid-template-columns: 1fr 1fr; }
+            .content-grid { grid-template-columns: 1fr; gap: 2rem; }
+            .form-row { grid-template-columns: 1fr; }
+            .footer-grid { grid-template-columns: 1fr 1fr; }
+            .nav-links { display: none; }
+            .footer-bottom { flex-direction: column; gap: 1rem; text-align: center; }
+        }
+        @media(max-width:480px) {
+            .process-steps { grid-template-columns: 1fr; }
+            .footer-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <!-- White BG Overlay -->
+    <div class="white-bg-overlay"></div>
+
+    <!-- 3D Canvas Background -->
+    <canvas id="bg-canvas"></canvas>
+
+    <!-- Theme Toggle -->
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+        <i class="fas fa-cube" id="toggle-icon"></i>
+        <div class="toggle-knob" id="toggle-knob"></div>
+        <span id="toggle-label">3D</span>
+    </button>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-inner">
+            <a href="index.html" class="logo">
+                <i class="fas fa-graduation-cap"></i>
+                Bright Future Academy
+            </a>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="about.html">About Us</a>
+                <a href="admissions.html" class="active">Admissions</a>
+                <a href="academics.html">Academics</a>
+                <a href="gallery.html">Gallery</a>
+                <a href="contact.html">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div>
+            <h1>Admissions <span>2024–25</span></h1>
+            <p>Begin Your Child's Journey to Excellence</p>
+            <div class="breadcrumb">
+                <a href="index.html">Home</a>
+                <i class="fas fa-chevron-right"></i>
+                <span>Admissions</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Process Steps -->
+    <section class="process-section">
+        <div class="container">
+            <div class="centered">
+                <div class="section-tag">How to Apply</div>
+                <h2 class="section-title">Admission Process</h2>
+                <p class="section-subtitle">Simple steps to enroll your child</p>
+            </div>
+            <div class="process-steps">
+                <div class="process-step">
+                    <div class="step-number">1</div>
+                    <h4>Inquiry & Registration</h4>
+                    <p>Fill the online inquiry form or visit the school office</p>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">2</div>
+                    <h4>Submit Documents</h4>
+                    <p>Submit all required documents for verification</p>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">3</div>
+                    <h4>Interaction & Assessment</h4>
+                    <p>Child interaction and parent meeting with principal</p>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">4</div>
+                    <h4>Admission Confirmation</h4>
+                    <p>Complete fee payment and receive admission letter</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Eligibility & Documents -->
+    <section class="info-section">
+        <div class="container">
+            <div class="content-grid">
+                <div>
+                    <div class="section-tag">Eligibility</div>
+                    <h2 class="section-title">Age Criteria</h2>
+                    <div style="margin-top:2rem;">
+                        <div class="age-card"><span><strong>Nursery</strong></span><span>3+ years as on 31st March 2024</span></div>
+                        <div class="age-card"><span><strong>LKG</strong></span><span>4+ years as on 31st March 2024</span></div>
+                        <div class="age-card"><span><strong>UKG</strong></span><span>5+ years as on 31st March 2024</span></div>
+                        <div class="age-card"><span><strong>Class 1</strong></span><span>6+ years as on 31st March 2024</span></div>
+                    </div>
+                </div>
+                <div>
+                    <div class="section-tag">Documents</div>
+                    <h2 class="section-title">Required Documents</h2>
+                    <div style="margin-top:2rem;">
+                        <div class="doc-card"><i class="fas fa-file-alt"></i><span>Birth Certificate (Original & Photocopy)</span></div>
+                        <div class="doc-card"><i class="fas fa-id-card"></i><span>Aadhaar Card of Child & Parents</span></div>
+                        <div class="doc-card"><i class="fas fa-home"></i><span>Address Proof (Latest Utility Bill)</span></div>
+                        <div class="doc-card"><i class="fas fa-images"></i><span>Passport Size Photographs (4 copies)</span></div>
+                        <div class="doc-card"><i class="fas fa-certificate"></i><span>Transfer Certificate (for Classes 2–12)</span></div>
+                        <div class="doc-card"><i class="fas fa-book"></i><span>Previous Year Report Card</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Admission Form -->
+    <section class="form-section">
+        <div class="container">
+            <div class="form-container">
+                <div class="centered" style="margin-bottom:2.5rem;">
+                    <div class="section-tag">Apply Online</div>
+                    <h2 class="section-title">Admission Form</h2>
+                    <p class="section-subtitle">Fill in the details below to apply for admission</p>
+                </div>
+                <form id="admissionForm" onsubmit="handleAdmission(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Student's Full Name <span>*</span></label>
+                            <input type="text" name="studentName" placeholder="Enter full name" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Date of Birth <span>*</span></label>
+                            <input type="date" name="dob" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Gender <span>*</span></label>
+                            <select name="gender" required>
+                                <option value="">Select Gender</option>
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Class Applying For <span>*</span></label>
+                            <select name="class" required>
+                                <option value="">Select Class</option>
+                                <option>Nursery</option><option>LKG</option><option>UKG</option>
+                                <option>Class 1</option><option>Class 2</option><option>Class 3</option>
+                                <option>Class 4</option><option>Class 5</option><option>Class 6</option>
+                                <option>Class 7</option><option>Class 8</option><option>Class 9</option>
+                                <option>Class 10</option><option>Class 11</option><option>Class 12</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Father's Name <span>*</span></label>
+                            <input type="text" name="fatherName" placeholder="Father's full name" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Mother's Name <span>*</span></label>
+                            <input type="text" name="motherName" placeholder="Mother's full name" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Father's Occupation</label>
+                            <input type="text" name="fatherOccupation" placeholder="e.g. Engineer">
+                        </div>
+                        <div class="form-group">
+                            <label>Mother's Occupation</label>
+                            <input type="text" name="motherOccupation" placeholder="e.g. Doctor">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Contact Number <span>*</span></label>
+                            <input type="tel" name="phone" pattern="[0-9]{10}" placeholder="10-digit mobile number" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Email Address <span>*</span></label>
+                            <input type="email" name="email" placeholder="you@example.com" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group full">
+                            <label>Residential Address <span>*</span></label>
+                            <textarea name="address" placeholder="Full residential address" required></textarea>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Previous School (if any)</label>
+                            <input type="text" name="previousSchool" placeholder="School name">
+                        </div>
+                        <div class="form-group">
+                            <label>Previous Class</label>
+                            <input type="text" name="previousClass" placeholder="e.g. Class 5">
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="reset" class="btn btn-outline">Reset Form</button>
+                        <button type="submit" class="btn btn-primary">Submit Application</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Fee Structure -->
+    <section class="fee-section">
+        <div class="container">
+            <div class="centered">
+                <div class="section-tag">Fee Structure</div>
+                <h2 class="section-title">Fee Structure 2024–25</h2>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Class</th>
+                            <th>Admission Fee</th>
+                            <th>Annual Fee</th>
+                            <th>Monthly Tuition</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Nursery – UKG</td><td>₹10,000</td><td>₹15,000</td><td>₹5,000</td></tr>
+                        <tr><td>Class 1 – 5</td><td>₹12,000</td><td>₹18,000</td><td>₹6,000</td></tr>
+                        <tr><td>Class 6 – 8</td><td>₹15,000</td><td>₹22,000</td><td>₹7,500</td></tr>
+                        <tr><td>Class 9 – 10</td><td>₹18,000</td><td>₹25,000</td><td>₹9,000</td></tr>
+                        <tr><td>Class 11 – 12</td><td>₹20,000</td><td>₹28,000</td><td>₹10,000</td></tr>
+                    </tbody>
+                </table>
+                <div class="fee-note">
+                    <strong>Note:</strong> The above fee structure is indicative and subject to revision.<br>
+                    • Transportation and books are charged separately.<br>
+                    • Sibling discount of 10% available on tuition fee.
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <div class="footer-logo"><i class="fas fa-graduation-cap"></i> Bright Future Academy</div>
+                    <p class="footer-desc">Empowering young minds with quality education and holistic development since 1995.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-youtube"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                <div>
+                    <h4>Quick Links</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">About Us</a></li><li><a href="#">Admissions</a></li>
+                        <li><a href="#">Academics</a></li><li><a href="#">Gallery</a></li>
+                        <li><a href="#">Careers</a></li><li><a href="#">Downloads</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4>Portals</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">Student Login</a></li><li><a href="#">Teacher Login</a></li>
+                        <li><a href="#">Admin Login</a></li><li><a href="#">Parent Portal</a></li>
+                        <li><a href="#">Alumni Portal</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4>Contact Us</h4>
+                    <ul class="footer-contact">
+                        <li><i class="fas fa-map-marker-alt"></i><span>Sector 15, Rohini<br>New Delhi – 110085</span></li>
+                        <li><i class="fas fa-phone"></i><span>+91 11 2345 6789</span></li>
+                        <li><i class="fas fa-envelope"></i><span>info@brightfuture.edu.in</span></li>
+                        <li><i class="fas fa-clock"></i><span>Mon–Sat: 8:00 AM – 4:00 PM</span></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2024 Bright Future Academy. All Rights Reserved.</p>
+                <div>
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms & Conditions</a>
+                    <a href="#">Sitemap</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+    // ============ THEME TOGGLE ============
+    let isWhiteMode = false;
+    function toggleTheme() {
+        isWhiteMode = !isWhiteMode;
+        document.body.classList.toggle('white-mode', isWhiteMode);
+        document.getElementById('toggle-label').textContent = isWhiteMode ? 'White' : '3D';
+        document.getElementById('toggle-icon').className = isWhiteMode ? 'fas fa-sun' : 'fas fa-cube';
+    }
+
+    // ============ 3D CANVAS BACKGROUND ============
+    const canvas = document.getElementById('bg-canvas');
+    const ctx = canvas.getContext('2d');
+
+    let W, H, particles, lines, mouse = {x: 0, y: 0};
+    const NUM_PARTICLES = 90;
+    const CONNECT_DIST = 160;
+
+    function resize() {
+        W = canvas.width = window.innerWidth;
+        H = canvas.height = window.innerHeight;
+    }
+
+    class Particle {
+        constructor() { this.reset(true); }
+        reset(init=false) {
+            this.x = Math.random() * W;
+            this.y = init ? Math.random() * H : H + 10;
+            this.z = 0.3 + Math.random() * 0.7;  // depth
+            this.vx = (Math.random() - 0.5) * 0.4 * this.z;
+            this.vy = -(0.2 + Math.random() * 0.5) * this.z;
+            this.r = 1.5 + this.z * 2.5;
+            this.alpha = 0.4 + this.z * 0.5;
+            // colors
+            const colors = ['#f0a500','#e05c2a','#5b8df0','#a0c4ff','#ffffff'];
+            this.color = colors[Math.floor(Math.random() * colors.length)];
+            this.life = 0;
+            this.maxLife = 300 + Math.random() * 500;
+        }
+        update() {
+            this.x += this.vx;
+            this.y += this.vy;
+            // mouse influence
+            const dx = this.x - mouse.x;
+            const dy = this.y - mouse.y;
+            const dist = Math.sqrt(dx*dx + dy*dy);
+            if (dist < 150) {
+                const force = (150 - dist) / 150 * 0.05;
+                this.vx += dx / dist * force;
+                this.vy += dy / dist * force;
+            }
+            // dampen
+            this.vx *= 0.99;
+            this.vy *= 0.99;
+            this.life++;
+            if (this.y < -20 || this.life > this.maxLife || this.x < -50 || this.x > W + 50) {
+                this.reset();
+            }
+        }
+        draw() {
+            ctx.save();
+            ctx.globalAlpha = this.alpha;
+            ctx.fillStyle = this.color;
+            ctx.shadowBlur = 8 * this.z;
+            ctx.shadowColor = this.color;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+        }
+    }
+
+    // Floating geometric shapes (3D cubes wireframe)
+    class FloatShape {
+        constructor() { this.init(); }
+        init() {
+            this.x = Math.random() * W;
+            this.y = Math.random() * H;
+            this.size = 20 + Math.random() * 50;
+            this.rot = Math.random() * Math.PI * 2;
+            this.rotSpeed = (Math.random() - 0.5) * 0.008;
+            this.vx = (Math.random() - 0.5) * 0.3;
+            this.vy = (Math.random() - 0.5) * 0.2;
+            this.alpha = 0.04 + Math.random() * 0.08;
+            this.type = Math.floor(Math.random() * 3);
+        }
+        update() {
+            this.x += this.vx; this.y += this.vy;
+            this.rot += this.rotSpeed;
+            if (this.x < -100) this.x = W + 100;
+            if (this.x > W + 100) this.x = -100;
+            if (this.y < -100) this.y = H + 100;
+            if (this.y > H + 100) this.y = -100;
+        }
+        draw() {
+            ctx.save();
+            ctx.translate(this.x, this.y);
+            ctx.rotate(this.rot);
+            ctx.globalAlpha = this.alpha;
+            ctx.strokeStyle = '#5b8df0';
+            ctx.lineWidth = 1;
+            const s = this.size;
+            if (this.type === 0) {
+                // Square
+                ctx.strokeRect(-s/2, -s/2, s, s);
+                // inner rotated square
+                ctx.rotate(Math.PI/4);
+                ctx.strokeRect(-s/3, -s/3, s*0.67, s*0.67);
+            } else if (this.type === 1) {
+                // Triangle
+                ctx.beginPath();
+                ctx.moveTo(0, -s/2);
+                ctx.lineTo(s/2, s/2);
+                ctx.lineTo(-s/2, s/2);
+                ctx.closePath();
+                ctx.stroke();
+            } else {
+                // Diamond
+                ctx.beginPath();
+                ctx.moveTo(0, -s/2);
+                ctx.lineTo(s/2, 0);
+                ctx.lineTo(0, s/2);
+                ctx.lineTo(-s/2, 0);
+                ctx.closePath();
+                ctx.stroke();
+            }
+            ctx.restore();
+        }
+    }
+
+    function init() {
+        resize();
+        particles = Array.from({length: NUM_PARTICLES}, () => new Particle());
+        lines = Array.from({length: 14}, () => new FloatShape());
+    }
+
+    function drawBackground() {
+        // Deep space gradient
+        const grad = ctx.createLinearGradient(0, 0, W, H);
+        grad.addColorStop(0, '#040d1e');
+        grad.addColorStop(0.4, '#061430');
+        grad.addColorStop(0.7, '#0a1a40');
+        grad.addColorStop(1, '#050c22');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, W, H);
+
+        // Subtle radial glow from top
+        const rg = ctx.createRadialGradient(W*0.5, 0, 0, W*0.5, 0, H*0.7);
+        rg.addColorStop(0, 'rgba(91,141,240,0.12)');
+        rg.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = rg;
+        ctx.fillRect(0, 0, W, H);
+    }
+
+    function drawConnections() {
+        for (let i = 0; i < particles.length; i++) {
+            for (let j = i + 1; j < particles.length; j++) {
+                const dx = particles[i].x - particles[j].x;
+                const dy = particles[i].y - particles[j].y;
+                const dist = Math.sqrt(dx*dx + dy*dy);
+                if (dist < CONNECT_DIST) {
+                    const alpha = (1 - dist / CONNECT_DIST) * 0.25;
+                    ctx.save();
+                    ctx.globalAlpha = alpha;
+                    ctx.strokeStyle = '#5b8df0';
+                    ctx.lineWidth = 0.6;
+                    ctx.beginPath();
+                    ctx.moveTo(particles[i].x, particles[i].y);
+                    ctx.lineTo(particles[j].x, particles[j].y);
+                    ctx.stroke();
+                    ctx.restore();
+                }
+            }
+        }
+    }
+
+    function animate() {
+        drawBackground();
+        lines.forEach(s => { s.update(); s.draw(); });
+        drawConnections();
+        particles.forEach(p => { p.update(); p.draw(); });
+        requestAnimationFrame(animate);
+    }
+
+    window.addEventListener('resize', () => { resize(); });
+    window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+
+    init();
+    animate();
+
+    // ============ FORM HANDLER ============
+    function handleAdmission(e) {
+        e.preventDefault();
+        const btn = e.target.querySelector('[type=submit]');
+        btn.textContent = '✓ Application Submitted!';
+        btn.style.background = 'linear-gradient(135deg, #22c55e, #16a34a)';
+        btn.disabled = true;
+        setTimeout(() => {
+            btn.textContent = 'Submit Application';
+            btn.style.background = '';
+            btn.disabled = false;
+            e.target.reset();
+        }, 3000);
+    }
+    </script>
+</body>
+</html>
